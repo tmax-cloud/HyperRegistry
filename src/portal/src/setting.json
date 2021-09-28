@@ -4,10 +4,10 @@
     "lightMode": ""
   },
   "loginBgImg": "",
-  "loginTitle": "",
+  "loginTitle": "SuperRegistry",
   "product": {
-    "name": "",
-    "logo": "",
+    "name": "SuperRegistry",
+    "logo": "superregistry-logo.svg",
     "introduction": ""
   }
 }

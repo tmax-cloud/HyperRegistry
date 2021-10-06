@@ -34,6 +34,10 @@ const routes: Routes = [
         loadChildren: () => import('./left-side-nav/projects/projects.module').then(m => m.ProjectsModule)
       },
       {
+        path: 'requests',
+        loadChildren: () => import('./left-side-nav/requests/requests.module').then(m => m.RequestsModule)
+      },
+      {
         path: 'logs',
         loadChildren: () => import('./left-side-nav/log/log.module').then(m => m.LogModule)
       },

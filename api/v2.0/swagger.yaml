@@ -5333,7 +5333,140 @@ paths:
           $ref: '#/responses/404'
         '500':
           $ref: '#/responses/500'
-
+  /requests:
+    get:
+      summary: List requests according to the query strings.
+      description: This endpoint returns requests created
+      tags:
+        - request
+      operationId: ListRequests
+      parameters:
+        - $ref: '#/parameters/requestId'
+        - $ref: '#/parameters/query'
+        - $ref: '#/parameters/sort'
+        - $ref: '#/parameters/page'
+        - $ref: '#/parameters/pageSize'
+        - name: name
+          in: query
+          type: string
+          required: false
+          description: The request name.
+      responses:
+        '200':
+          description: Return all matched requests.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Request'
+          headers:
+            X-Total-Count:
+              description: The total count of available items
+              type: integer
+            Link:
+              description: Link to previous page and next page
+              type: string
+        '401':
+          $ref: '#/responses/401'
+        '500':
+          $ref: '#/responses/500'
+    post:
+      summary: Create a new request.
+      description: This endpoint is for user to create a new request.
+      tags:
+        - request
+      operationId: createRequest
+      parameters:
+        - $ref: '#/parameters/requestId'
+        - $ref: '#/parameters/resourceNameInLocation'
+        - name: request
+          in: body
+          description: New created request.
+          required: true
+          schema:
+            $ref: '#/definitions/Request'
+      responses:
+        '201':
+          $ref: '#/responses/201'
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '409':
+          $ref: '#/responses/409'
+        '500':
+          $ref: '#/responses/500'
+  '/requests/{request_name_or_id}':
+    get:
+      summary: Return specific request detail information
+      description: This endpoint returns specific request information by request ID.
+      tags:
+        - request
+      operationId: getRequest
+      parameters:
+        - $ref: '#/parameters/requestId'
+        - $ref: '#/parameters/isResourceName'
+        - $ref: '#/parameters/requestNameOrId'
+      responses:
+        '200':
+          description: Return matched request information.
+          schema:
+            $ref: '#/definitions/Request'
+        '401':
+          $ref: '#/responses/401'
+        '500':
+          $ref: '#/responses/500'
+    put:
+      summary: Update properties for a selected request.
+      description: This endpoint is aimed to update the properties of a request.
+      tags:
+        - request
+      operationId: updateRequest
+      parameters:
+        - $ref: '#/parameters/requestId'
+        - $ref: '#/parameters/isResourceName'
+        - $ref: '#/parameters/requestNameOrId'
+        - name: request
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Request'
+          description: Updates of request.
+      responses:
+        '200':
+          $ref: '#/responses/200'
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '403':
+          $ref: '#/responses/403'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
+    delete:
+      summary: Delete request by requestID
+      description: This endpoint is aimed to delete request by request ID.
+      tags:
+        - request
+      operationId: deleteRequest
+      parameters:
+        - $ref: '#/parameters/requestId'
+        - $ref: '#/parameters/isResourceName'
+        - $ref: '#/parameters/requestNameOrId'
+      responses:
+        '200':
+          $ref: '#/responses/200'
+        '400':
+          $ref: '#/responses/400'
+        '403':
+          $ref: '#/responses/403'
+        '404':
+          $ref: '#/responses/404'
+        '412':
+          $ref: '#/responses/412'
+        '500':
+          $ref: '#/responses/500'
 parameters:
   query:
     name: q
@@ -5487,6 +5620,12 @@ parameters:
     required: true
     type: integer
     format: int64
+  requestNameOrId:
+    name: request_name_or_id
+    in: path
+    description: The name or id of the request
+    required: true
+    type: string
 
 responses:
   '200':
@@ -5583,6 +5722,30 @@ responses:
     schema:
       $ref: '#/definitions/Errors'
 definitions:
+  Request:
+    type: object
+    properties:
+      request_id:
+        type: integer
+        format: int32
+        description: Request ID
+      name:
+        type: string
+        description: TThe name of the request
+      creation_time:
+        type: string
+        format: date-time
+        description: The creation time of the request.
+      update_time:
+        type: string
+        format: date-time
+        description: The update time of the request.
+      deleted:
+        type: boolean
+        description: A deletion mark of the request.
+      owner_name:
+        type: string
+        description: The owner name of the request.
   Errors:
     description: The error array that describe the errors got during the handling of request
     type: object

@@ -64,6 +64,7 @@ const (
 	ResourceAuditLog           = Resource("audit-log")
 	ResourceCatalog            = Resource("catalog")
 	ResourceProject            = Resource("project")
+	ResourceRequest            = Resource("request")
 	ResourceUser               = Resource("user")
 	ResourceUserGroup          = Resource("user-group")
 	ResourceRegistry           = Resource("registry")

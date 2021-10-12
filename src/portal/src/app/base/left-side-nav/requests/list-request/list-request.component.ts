@@ -14,13 +14,13 @@
 import {forkJoin, of, Subscription} from "rxjs";
 import {Component, EventEmitter, OnDestroy, Output} from "@angular/core";
 import {Router} from "@angular/router";
-import {ProjectService, State} from "../../../../shared/services";
+import {RequestService, State} from "../../../../shared/services";
 import {TranslateService} from "@ngx-translate/core";
 import {SessionService} from "../../../../shared/services/session.service";
 import {MessageHandlerService} from "../../../../shared/services/message-handler.service";
 import {SearchTriggerService} from "../../../../shared/components/global-search/search-trigger.service";
 import {AppConfigService} from "../../../../services/app-config.service";
-import {Project} from "../../../project/project";
+import {Request} from "../request";
 import {catchError, finalize, map} from "rxjs/operators";
 import {calculatePage, getSortingString} from "../../../../shared/units/utils";
 import {OperationService} from "../../../../shared/components/operation/operation.service";
@@ -31,7 +31,6 @@ import {
     ConfirmationButtons,
     ConfirmationState,
     ConfirmationTargets,
-    RoleInfo
 } from "../../../../shared/entities/shared.const";
 import {ConfirmationDialogService} from "../../../global-confirmation-dialog/confirmation-dialog.service";
 import {errorHandler} from "../../../../shared/units/shared.utils";
@@ -43,23 +42,17 @@ import {ConfirmationMessage} from "../../../global-confirmation-dialog/confirmat
 })
 export class ListRequestComponent implements OnDestroy {
     loading = true;
-    projects: Project[] = [];
-    filteredType = 0; // All projects
+    requests: Request[] = [];
     searchKeyword = "";
-    selectedRow: Project[] = [];
+    selectedRow: Request[] = [];
 
     @Output() addRequest = new EventEmitter<void>();
 
-    roleInfo = RoleInfo;
     currentPage = 1;
     totalCount = 0;
     pageSize = 15;
     currentState: State;
     subscription: Subscription;
-    projectTypeMap: any = {
-        0: "PROJECT.PROJECT",
-        1: "PROJECT.PROXY_CACHE"
-    };
     state: ClrDatagridStateInterface;
 
     constructor(
@@ -67,7 +60,7 @@ export class ListRequestComponent implements OnDestroy {
         private appConfigService: AppConfigService,
         private router: Router,
         private searchTrigger: SearchTriggerService,
-        private proService: ProjectService,
+        private reqService: RequestService,
         private msgHandler: MessageHandlerService,
         private translate: TranslateService,
         private deletionDialogService: ConfirmationDialogService,
@@ -76,27 +69,23 @@ export class ListRequestComponent implements OnDestroy {
         this.subscription = deletionDialogService.confirmationConfirm$.subscribe(message => {
             if (message &&
                 message.state === ConfirmationState.CONFIRMED &&
-                message.source === ConfirmationTargets.PROJECT) {
-                this.delProjects(message.data);
+                message.source === ConfirmationTargets.REQUEST) {
+                this.delRequests(message.data);
             }
         });
     }
 
-    get projectCreationRestriction(): boolean {
+    get requestCreationRestriction(): boolean {
         let account = this.session.getCurrentUser();
         if (account) {
             switch (this.appConfigService.getConfig().project_creation_restriction) {
                 case "adminonly":
-                    return (account.has_admin_role);
+                    return !(account.has_admin_role);
                 case "everyone":
                     return true;
             }
         }
         return false;
-    }
-
-    get withChartMuseum(): boolean {
-        return this.appConfigService.getConfig().with_chartmuseum;
     }
 
     public get isSystemAdmin(): boolean {
@@ -109,7 +98,8 @@ export class ListRequestComponent implements OnDestroy {
             return false;
         }
 
-        return this.isSystemAdmin || this.selectedRow.every((pro: Project) => pro.current_user_role_id === 1);
+        // return this.isSystemAdmin || this.selectedRow.every((pro: Request) => pro.current_user_role_id === 1);
+        return true;
     }
 
     ngOnDestroy(): void {
@@ -118,15 +108,8 @@ export class ListRequestComponent implements OnDestroy {
         }
     }
 
-    addNewProject(): void {
+    addNewRequest(): void {
         this.addRequest.emit();
-    }
-
-    goToLink(proId: number): void {
-        this.searchTrigger.closeSearch(true);
-
-        let linkUrl = ["harbor", "projects", proId];
-        this.router.navigate(linkUrl);
     }
 
     clrLoad(state: ClrDatagridStateInterface) {
@@ -147,11 +130,7 @@ export class ListRequestComponent implements OnDestroy {
 
         this.loading = true;
 
-        let passInFilteredType: number = undefined;
-        if (this.filteredType > 0) {
-            passInFilteredType = this.filteredType - 1;
-        }
-        this.proService.listProjects(this.searchKeyword, passInFilteredType, pageNumber, this.pageSize, getSortingString(state))
+        this.reqService.listRequests(this.searchKeyword, pageNumber, this.pageSize, getSortingString(state))
             .pipe(finalize(() => {
                 this.loading = false;
             }))
@@ -164,40 +143,34 @@ export class ListRequestComponent implements OnDestroy {
                     }
                 }
 
-                this.projects = response.body as Project[];
+                this.requests = response.body as Request[];
             }, error => {
                 this.msgHandler.handleError(error);
             });
     }
 
-    newReplicationRule(p: Project) {
-        if (p) {
-            this.router.navigateByUrl(`/harbor/projects/${p.project_id}/replications?is_create=true`);
-        }
-    }
-
-    deleteProjects(p: Project[]) {
+    deleteRequests(r: Request[]) {
         let nameArr: string[] = [];
-        if (p && p.length) {
-            p.forEach(data => {
+        if (r && r.length) {
+            r.forEach(data => {
                 nameArr.push(data.name);
             });
             let deletionMessage = new ConfirmationMessage(
-                "PROJECT.DELETION_TITLE",
-                "PROJECT.DELETION_SUMMARY",
+                "REQUEST.DELETION_TITLE",
+                "REQUEST.DELETION_SUMMARY",
                 nameArr.join(","),
-                p,
-                ConfirmationTargets.PROJECT,
+                r,
+                ConfirmationTargets.REQUEST,
                 ConfirmationButtons.DELETE_CANCEL
             );
             this.deletionDialogService.openComfirmDialog(deletionMessage);
         }
     }
 
-    delProjects(projects: Project[]) {
+    delRequests(requests: Request[]) {
         let observableLists: any[] = [];
-        if (projects && projects.length) {
-            projects.forEach(data => {
+        if (requests && requests.length) {
+            requests.forEach(data => {
                 observableLists.push(this.delOperate(data));
             });
             forkJoin(...observableLists).subscribe(resArr => {
@@ -227,15 +200,15 @@ export class ListRequestComponent implements OnDestroy {
         }
     }
 
-    delOperate(project: Project) {
+    delOperate(request: Request) {
         // init operation info
         let operMessage = new OperateInfo();
         operMessage.name = 'OPERATION.DELETE_PROJECT';
-        operMessage.data.id = project.project_id;
+        operMessage.data.id = request.request_id;
         operMessage.state = OperationState.progressing;
-        operMessage.data.name = project.name;
+        operMessage.data.name = request.name;
         this.operationService.publishInfo(operMessage);
-        return this.proService.deleteProject(project.project_id)
+        return this.reqService.deleteRequest(request.request_id)
             .pipe(map(
                 () => {
                     operateChanges(operMessage, OperationState.success);
@@ -251,21 +224,19 @@ export class ListRequestComponent implements OnDestroy {
 
     refresh(): void {
         this.currentPage = 1;
-        this.filteredType = 0;
         this.searchKeyword = "";
 
         this.reload();
     }
 
-    doFilterProject(filter: number): void {
+    doFilterRequest(): void {
         this.currentPage = 1;
-        this.filteredType = filter;
         this.reload();
     }
 
-    doSearchProject(proName: string): void {
+    doSearchRequest(reqName: string): void {
         this.currentPage = 1;
-        this.searchKeyword = proName;
+        this.searchKeyword = reqName;
         this.reload();
     }
 

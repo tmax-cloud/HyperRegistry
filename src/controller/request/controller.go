@@ -72,6 +72,7 @@ type controller struct {
 }
 
 func (c *controller) Create(ctx context.Context, project *models.Request) (int64, error) {
+	log.Info("[controller]: Create Request")
 	var requestID int64
 	h := func(ctx context.Context) (err error) {
 		requestID, err = c.requestMgr.Create(ctx, project)
@@ -133,6 +134,7 @@ func (c *controller) Exists(ctx context.Context, requestIDOrName interface{}) (b
 }
 
 func (c *controller) Get(ctx context.Context, requestIDOrName interface{}, options ...Option) (*models.Request, error) {
+	log.Info("[controller]: Get Request")
 	r, err := c.requestMgr.Get(ctx, requestIDOrName)
 	if err != nil {
 		return nil, err
@@ -163,6 +165,8 @@ func (c *controller) GetByName(ctx context.Context, requestName string, options 
 }
 
 func (c *controller) List(ctx context.Context, query *q.Query, options ...Option) ([]*models.Request, error) {
+	log.Info("[controller]: List Request")
+
 	requests, err := c.requestMgr.List(ctx, query)
 	if err != nil {
 		return nil, err

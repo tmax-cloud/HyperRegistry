@@ -48,7 +48,8 @@ export const enum ConfirmationTargets {
   P2P_PROVIDER_DELETE,
   PROJECT_ROBOT_ACCOUNT,
   PROJECT_ROBOT_ACCOUNT_ENABLE_OR_DISABLE,
-  WEBHOOK
+  WEBHOOK,
+  REQUEST = 27
 }
 
 export const enum ActionType {

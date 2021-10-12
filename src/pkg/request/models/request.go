@@ -24,16 +24,11 @@ import (
 )
 
 const (
-	// RequestTable is the table name for project
+	// RequestTable is the table name for request
 	RequestTable = "request"
-	// ProjectPublic means project is public
-	ProjectPublic = "public"
-	// ProjectPrivate means project is private
-	ProjectPrivate = "private"
 )
 
 func init() {
-	fmt.Println("%%%%%%%%%% Register Request Model %%%%%%%%%")
 	orm.RegisterModel(&Request{})
 }
 
@@ -50,8 +45,7 @@ type Request struct {
 
 // NamesQuery ...
 type NamesQuery struct {
-	Names      []string // the names of project
-	WithPublic bool     // include the public projects
+	Names []string // the names of request
 }
 
 // FilterByOwner returns orm.QuerySeter with owner filter
@@ -80,10 +74,6 @@ func (p *Request) FilterByNames(ctx context.Context, qs orm.QuerySeter, key stri
 		names = append(names, `'`+v+`'`)
 	}
 	subQuery := fmt.Sprintf("SELECT request_id FROM project where name IN (%s)", strings.Join(names, ","))
-
-	if query.WithPublic {
-		subQuery = fmt.Sprintf("(%s) UNION (SELECT request_id FROM request_metadata WHERE name = 'public' AND value = 'true')", subQuery)
-	}
 
 	return qs.FilterRaw("request_id", fmt.Sprintf("IN (%s)", subQuery))
 }

@@ -16,14 +16,13 @@ import { CreateRequestComponent } from './create-request/create-request.componen
 import { ListRequestComponent } from './list-request/list-request.component';
 import { ConfigurationService } from '../../../services/config.service';
 import { SessionService } from "../../../shared/services/session.service";
-import { ProjectService, QuotaHardInterface } from "../../../shared/services";
+import { RequestService, QuotaHardInterface } from "../../../shared/services";
 import { Configuration } from "../config/config";
 import { FilterComponent } from '../../../shared/components/filter/filter.component';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, finalize, switchMap } from 'rxjs/operators';
-import { Project } from '../../project/project';
+import { Request } from './request';
 import { MessageHandlerService } from '../../../shared/services/message-handler.service';
-import { ProjectTypes } from "../../../shared/entities/shared.const";
 import { getSortingString } from "../../../shared/units/utils";
 
 @Component({
@@ -32,28 +31,17 @@ import { getSortingString } from "../../../shared/units/utils";
     styleUrls: ['./requests.component.scss']
 })
 export class RequestsComponent implements OnInit, OnDestroy {
-    projectTypes = ProjectTypes;
     quotaObj: QuotaHardInterface;
     @ViewChild(CreateRequestComponent)
     creationRequest: CreateRequestComponent;
 
     @ViewChild(ListRequestComponent)
-    listProject: ListRequestComponent;
+    listRequest: ListRequestComponent;
 
-    currentFilteredType: number = 0; // all projects
-    projectName: string = "";
+    requestName: string = "";
 
     loading: boolean = true;
 
-    get selecteType(): string {
-        return this.currentFilteredType + "";
-    }
-    set selecteType(_project: string) {
-        this.currentFilteredType = +_project;
-        if (window.sessionStorage) {
-            window.sessionStorage['projectTypeValue'] = +_project;
-        }
-    }
     @ViewChild(FilterComponent, {static: true})
     filterComponent: FilterComponent;
     searchSub: Subscription;
@@ -61,49 +49,41 @@ export class RequestsComponent implements OnInit, OnDestroy {
     constructor(
         public configService: ConfigurationService,
         private session: SessionService,
-        private proService: ProjectService,
+        private reqService: RequestService,
         private msgHandler: MessageHandlerService,
     ) { }
 
     ngOnInit(): void {
-        if (window.sessionStorage && window.sessionStorage['projectTypeValue'] && window.sessionStorage['fromDetails']) {
-            this.currentFilteredType = +window.sessionStorage['projectTypeValue'];
-            window.sessionStorage.removeItem('fromDetails');
-        }
         if (this.isSystemAdmin) {
             this.getConfigration();
         }
         if (!this.searchSub) {
-            // this.searchSub = this.filterComponent.filterTerms.pipe(
-            //     debounceTime(500),
-            //     distinctUntilChanged(),
-            //     switchMap(projectName => {
-            //         // reset project list
-            //         this.listProject.currentPage = 1;
-            //         this.listProject.searchKeyword = projectName;
-            //         this.listProject.selectedRow = [];
-            //         this.loading = true;
-            //         let passInFilteredType: number = undefined;
-            //         if (this.listProject.filteredType > 0) {
-            //             passInFilteredType = this.listProject.filteredType - 1;
-            //         }
-            //         return this.proService.listProjects( this.listProject.searchKeyword,
-            //             passInFilteredType,  this.listProject.currentPage, this.listProject.pageSize, getSortingString(this.listProject.state))
-            //             .pipe(finalize(() => {
-            //                 this.loading = false;
-            //             }));
-            //     })).subscribe(response => {
-            //     // Get total count
-            //     if (response.headers) {
-            //         let xHeader: string = response.headers.get("X-Total-Count");
-            //         if (xHeader) {
-            //             this.listProject.totalCount = parseInt(xHeader, 0);
-            //         }
-            //     }
-            //     this.listProject.projects = response.body as Project[];
-            // }, error => {
-            //     this.msgHandler.handleError(error);
-            // });
+            this.searchSub = this.filterComponent.filterTerms.pipe(
+                debounceTime(500),
+                distinctUntilChanged(),
+                switchMap(projectName => {
+                    // reset project list
+                    this.listRequest.currentPage = 1;
+                    this.listRequest.searchKeyword = projectName;
+                    this.listRequest.selectedRow = [];
+                    this.loading = true;
+                    return this.reqService.listRequests( this.listRequest.searchKeyword,
+                        this.listRequest.currentPage, this.listRequest.pageSize, getSortingString(this.listRequest.state))
+                        .pipe(finalize(() => {
+                            this.loading = false;
+                        }));
+                })).subscribe(response => {
+                // Get total count
+                if (response.headers) {
+                    let xHeader: string = response.headers.get("X-Total-Count");
+                    if (xHeader) {
+                        this.listRequest.totalCount = parseInt(xHeader, 0);
+                    }
+                }
+                this.listRequest.requests = response.body as Request[];
+            }, error => {
+                this.msgHandler.handleError(error);
+            });
         }
     }
 
@@ -128,23 +108,18 @@ export class RequestsComponent implements OnInit, OnDestroy {
         return account != null && account.has_admin_role;
     }
     openModal(): void {
-        this.creationRequest.newProject();
+        this.creationRequest.newRequest();
     }
 
-    createProject(created: boolean) {
+    createRequest(created: boolean) {
         if (created) {
             this.refresh();
         }
     }
 
-    doFilterProjects(): void {
-        this.listProject.doFilterProject(+this.selecteType);
-    }
-
     refresh(): void {
-        this.currentFilteredType = 0;
-        this.projectName = "";
-        this.listProject.refresh();
+        this.requestName = "";
+        this.listRequest.refresh();
     }
 
 }

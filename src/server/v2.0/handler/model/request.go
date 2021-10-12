@@ -30,10 +30,9 @@ func (p *Request) ToSwagger() *models.Request {
 	return &models.Request{
 		CreationTime: strfmt.DateTime(p.CreationTime),
 		Name:         p.Name,
-		//OwnerID:            int32(p.OwnerID),
-		OwnerName:  p.OwnerName,
-		RequestID:  int32(p.RequestID),
-		UpdateTime: strfmt.DateTime(p.UpdateTime),
+		OwnerName:    p.OwnerName,
+		RequestID:    int32(p.RequestID),
+		UpdateTime:   strfmt.DateTime(p.UpdateTime),
 	}
 }
 

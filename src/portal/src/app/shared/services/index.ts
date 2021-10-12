@@ -8,3 +8,4 @@ export * from "./project.service";
 export * from "./label.service";
 export * from "./permission.service";
 export * from "./permission-static";
+export * from "./request.service";

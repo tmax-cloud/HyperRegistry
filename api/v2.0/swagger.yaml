@@ -5467,6 +5467,54 @@ paths:
           $ref: '#/responses/412'
         '500':
           $ref: '#/responses/500'
+  '/requests/{request_name_or_id}/_approve':
+    put:
+      summary: Approve project creation request
+      description: This endpoint is aimed to approve project request by request ID.
+      operationId: approveRequest
+      tags:
+        - request
+      parameters:
+        - $ref: '#/parameters/requestId'
+        - $ref: '#/parameters/isResourceName'
+        - $ref: '#/parameters/requestNameOrId'
+      responses:
+        '200':
+          $ref: '#/responses/200'
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '403':
+          $ref: '#/responses/403'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
+  '/requests/{request_name_or_id}/_reject':
+    put:
+      summary: Reject project creation request
+      description: This endpoint is aimed to reject project request by request ID.
+      operationId: rejectRequest
+      tags:
+        - request
+      parameters:
+        - $ref: '#/parameters/requestId'
+        - $ref: '#/parameters/isResourceName'
+        - $ref: '#/parameters/requestNameOrId'
+      responses:
+        '200':
+          $ref: '#/responses/200'
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '403':
+          $ref: '#/responses/403'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
 parameters:
   query:
     name: q
@@ -5746,6 +5794,14 @@ definitions:
       owner_name:
         type: string
         description: The owner name of the request.
+      owner_id:
+        type: integer
+        format: int32
+        description: The owner id of the request.
+      is_approved:
+        type: integer
+        format: int32
+        description: Whether the request approved or not.
   Errors:
     description: The error array that describe the errors got during the handling of request
     type: object

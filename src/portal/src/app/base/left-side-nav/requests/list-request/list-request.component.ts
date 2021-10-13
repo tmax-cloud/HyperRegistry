@@ -52,9 +52,6 @@ export class ListRequestComponent implements OnDestroy {
     totalCount = 0;
     pageSize = 15;
     currentState: State;
-    subscription: Subscription;
-    state: ClrDatagridStateInterface;
-
     constructor(
         private session: SessionService,
         private appConfigService: AppConfigService,
@@ -64,16 +61,43 @@ export class ListRequestComponent implements OnDestroy {
         private msgHandler: MessageHandlerService,
         private translate: TranslateService,
         private deletionDialogService: ConfirmationDialogService,
+        private approveDialogService: ConfirmationDialogService,
+        private denyDialogService: ConfirmationDialogService,
         private operationService: OperationService,
         private translateService: TranslateService) {
-        this.subscription = deletionDialogService.confirmationConfirm$.subscribe(message => {
+        this.deleteSubscription = deletionDialogService.confirmationConfirm$.subscribe(message => {
             if (message &&
                 message.state === ConfirmationState.CONFIRMED &&
                 message.source === ConfirmationTargets.REQUEST) {
                 this.delRequests(message.data);
             }
         });
+        this.approveSubscription = approveDialogService.confirmationConfirm$.subscribe(message => {
+            if (message &&
+                message.state === ConfirmationState.CONFIRMED &&
+                message.source === ConfirmationTargets.REQUEST) {
+                this.allowRequests(message.data);
+            }
+        });
+        this.denySubscription = denyDialogService.confirmationConfirm$.subscribe(message => {
+            if (message &&
+                message.state === ConfirmationState.CONFIRMED &&
+                message.source === ConfirmationTargets.REQUEST) {
+                this.rejectRequests(message.data);
+            }
+        });
     }
+    deleteSubscription: Subscription;
+    approveSubscription: Subscription;
+    denySubscription: Subscription;
+
+    state: ClrDatagridStateInterface;
+
+    approvedTypeMap: any = {
+        0: "REQUEST.NOT_YET",
+        1: "REQUEST.APPROVED",
+        2: "REQUEST.DENIED"
+    };
 
     get requestCreationRestriction(): boolean {
         let account = this.session.getCurrentUser();
@@ -103,8 +127,14 @@ export class ListRequestComponent implements OnDestroy {
     }
 
     ngOnDestroy(): void {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
+        if (this.deleteSubscription) {
+            this.deleteSubscription.unsubscribe();
+        }
+        if (this.approveSubscription) {
+            this.approveSubscription.unsubscribe();
+        }
+        if (this.denySubscription) {
+            this.denySubscription.unsubscribe();
         }
     }
 
@@ -167,6 +197,42 @@ export class ListRequestComponent implements OnDestroy {
         }
     }
 
+    approveRequests(r: Request[]) {
+        let nameArr: string[] = [];
+        if (r && r.length) {
+            r.forEach(data => {
+                nameArr.push(data.name);
+            });
+            let approveMessage = new ConfirmationMessage(
+                "REQUEST.APPROVE_TITLE",
+                "REQUEST.APPROVE_SUMMARY",
+                nameArr.join(","),
+                r,
+                ConfirmationTargets.REQUEST,
+                ConfirmationButtons.YES_NO
+            );
+            this.approveDialogService.openComfirmDialog(approveMessage);
+        }
+    }
+
+    denyRequests(r: Request[]) {
+        let nameArr: string[] = [];
+        if (r && r.length) {
+            r.forEach(data => {
+                nameArr.push(data.name);
+            });
+            let denyMessage = new ConfirmationMessage(
+                "REQUEST.DENY_TITLE",
+                "REQUEST.DENY_SUMMARY",
+                nameArr.join(","),
+                r,
+                ConfirmationTargets.REQUEST,
+                ConfirmationButtons.YES_NO
+            );
+            this.denyDialogService.openComfirmDialog(denyMessage);
+        }
+    }
+
     delRequests(requests: Request[]) {
         let observableLists: any[] = [];
         if (requests && requests.length) {
@@ -198,6 +264,106 @@ export class ListRequestComponent implements OnDestroy {
                 }
             });
         }
+    }
+
+    allowRequests(requests: Request[]): void {
+        let observableLists: any[] = [];
+        if (requests && requests.length) {
+            requests.forEach(data => {
+                observableLists.push(this.approveOperate(data));
+            });
+            forkJoin(...observableLists).subscribe(resArr => {
+                let error;
+                if (resArr && resArr.length) {
+                    resArr.forEach(item => {
+                        if (item instanceof HttpErrorResponse) {
+                            error = errorHandler(item);
+                        }
+                    });
+                }
+                if (error) {
+                    this.msgHandler.handleError(error);
+                } else {
+                    this.translate.get("BATCH.APPROVED_SUCCESS").subscribe(res => {
+                        this.msgHandler.showSuccess(res);
+                    });
+                }
+                this.selectedRow = [];
+                this.refresh();
+            });
+        }
+    }
+
+    rejectRequests(requests: Request[]): void {
+        let observableLists: any[] = [];
+        if (requests && requests.length) {
+            requests.forEach(data => {
+                observableLists.push(this.denyOperate(data));
+            });
+            forkJoin(...observableLists).subscribe(resArr => {
+                let error;
+                if (resArr && resArr.length) {
+                    resArr.forEach(item => {
+                        if (item instanceof HttpErrorResponse) {
+                            error = errorHandler(item);
+                        }
+                    });
+                }
+                if (error) {
+                    this.msgHandler.handleError(error);
+                } else {
+                    this.translate.get("BATCH.DENIED_SUCCESS").subscribe(res => {
+                        this.msgHandler.showSuccess(res);
+                    });
+                }
+                this.selectedRow = [];
+                this.refresh();
+            });
+        }
+    }
+
+    approveOperate(request: Request) {
+        // init operation info
+        let operMessage = new OperateInfo();
+        operMessage.name = 'OPERATION.APPROVE_PROJECT';
+        operMessage.data.id = request.request_id;
+        operMessage.state = OperationState.progressing;
+        operMessage.data.name = request.name;
+        this.operationService.publishInfo(operMessage);
+        return this.reqService.approveRequest(request.request_id)
+            .pipe(map(
+                () => {
+                    operateChanges(operMessage, OperationState.success);
+                }), catchError(
+                error => {
+                    const message = errorHandler(error);
+                    this.translateService.get(message).subscribe(res => {
+                        operateChanges(operMessage, OperationState.failure, res);
+                    });
+                    return of(error);
+                }));
+    }
+
+    denyOperate(request: Request) {
+        // init operation info
+        let operMessage = new OperateInfo();
+        operMessage.name = 'OPERATION.DENY_PROJECT';
+        operMessage.data.id = request.request_id;
+        operMessage.state = OperationState.progressing;
+        operMessage.data.name = request.name;
+        this.operationService.publishInfo(operMessage);
+        return this.reqService.denyRequest(request.request_id)
+            .pipe(map(
+                () => {
+                    operateChanges(operMessage, OperationState.success);
+                }), catchError(
+                error => {
+                    const message = errorHandler(error);
+                    this.translateService.get(message).subscribe(res => {
+                        operateChanges(operMessage, OperationState.failure, res);
+                    });
+                    return of(error);
+                }));
     }
 
     delOperate(request: Request) {

@@ -50,6 +50,8 @@ export abstract class RequestService {
     ): Observable<HttpResponse<Request[]>>;
     abstract createRequest(name: string): Observable<any>;
     abstract deleteRequest(requestId: number): Observable<any>;
+    abstract approveRequest(requestId: number): Observable<any>;
+    abstract denyRequest(requestId: number): Observable<any>;
     abstract checkRequestExists(requestName: string): Observable<any>;
 }
 
@@ -106,6 +108,18 @@ export class RequestDefaultService extends RequestService {
     public deleteRequest(requestId: number): Observable<any> {
         return this.http
             .delete(`${CURRENT_BASE_HREF}/requests/${requestId}`)
+            .pipe(catchError(error => observableThrowError(error)));
+    }
+
+    public approveRequest(requestId: number): Observable<any> {
+        return this.http
+            .put(`${CURRENT_BASE_HREF}/requests/${requestId}/_approve`, "")
+            .pipe(catchError(error => observableThrowError(error)));
+    }
+
+    public denyRequest(requestId: number): Observable<any> {
+        return this.http
+            .put(`${CURRENT_BASE_HREF}/requests/${requestId}/_deny`, "")
             .pipe(catchError(error => observableThrowError(error)));
     }
 

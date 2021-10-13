@@ -40,7 +40,8 @@ type Request struct {
 	CreationTime time.Time `orm:"column(creation_time);auto_now_add" json:"creation_time"`
 	UpdateTime   time.Time `orm:"column(update_time);auto_now" json:"update_time"`
 	Deleted      bool      `orm:"column(deleted)" json:"deleted"`
-	OwnerName    string    `orm:"-" json:"owner_name"`
+	OwnerName    string    `orm:"column(owner_name)" json:"owner_name"`
+	IsApproved   int       `orm:"column(is_approved)" json:"is_approved"`
 }
 
 // NamesQuery ...
@@ -73,7 +74,7 @@ func (p *Request) FilterByNames(ctx context.Context, qs orm.QuerySeter, key stri
 	for _, v := range query.Names {
 		names = append(names, `'`+v+`'`)
 	}
-	subQuery := fmt.Sprintf("SELECT request_id FROM project where name IN (%s)", strings.Join(names, ","))
+	subQuery := fmt.Sprintf("SELECT request_id FROM request WHERE name IN (%s)", strings.Join(names, ","))
 
 	return qs.FilterRaw("request_id", fmt.Sprintf("IN (%s)", subQuery))
 }

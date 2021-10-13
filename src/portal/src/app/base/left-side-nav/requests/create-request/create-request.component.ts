@@ -125,11 +125,11 @@ export class CreateRequestComponent implements OnInit, AfterViewInit, OnChanges,
             return true;
         }
         if (this.currentForm.controls["create_request_name"].errors) {
-            this.nameTooltipText = 'PROJECT.NAME_TOOLTIP';
+            this.nameTooltipText = 'REQUEST.NAME_TOOLTIP';
             return false;
         }
         if (this.isNameExisted) {
-            this.nameTooltipText = 'PROJECT.NAME_ALREADY_EXISTS';
+            this.nameTooltipText = 'REQUEST.NAME_ALREADY_EXISTS';
             return false;
         }
         return true;

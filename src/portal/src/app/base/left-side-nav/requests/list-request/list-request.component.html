@@ -1,22 +1,40 @@
 <clr-datagrid (clrDgRefresh)="clrLoad($event)" [clrDgLoading]="loading" [(clrDgSelected)]="selectedRow">
     <clr-dg-action-bar>
-        <button type="button" class="btn  btn-secondary" (click)="addNewRequest()" *ngIf="requestCreationRestriction">
-            <clr-icon shape="plus" size="16"></clr-icon>&nbsp;{{'REQUEST.NEW_REQUEST' | translate}}</button>
+        <button type="button" class="btn  btn-secondary" *ngIf="requestCreationRestriction"
+                (click)="addNewRequest()">
+            <clr-icon shape="plus" size="16"></clr-icon>&nbsp;{{'REQUEST.NEW_REQUEST' | translate}}
+        </button>
+        <button type="button" class="btn btn-secondary" *ngIf="!requestCreationRestriction" [disabled]="!canDelete"
+                (click)="approveRequests(selectedRow)">
+            <clr-icon shape="plus-circle" size="16"></clr-icon>&nbsp;{{'REQUEST.APPROVE' | translate}}
+        </button>
+        <button type="button" class="btn btn-secondary" *ngIf="!requestCreationRestriction" [disabled]="!canDelete"
+                (click)="denyRequests(selectedRow)">
+            <clr-icon shape="minus-circle" size="16"></clr-icon>&nbsp;{{'REQUEST.DENY' | translate}}
+        </button>
         <button id="delete-project" type="button" class="btn  btn-secondary" [disabled]="!canDelete"
-            (click)="deleteRequests(selectedRow)">
-            <clr-icon shape="times" size="16"></clr-icon>&nbsp;{{'REQUEST.DELETE' | translate}}</button>
+                (click)="deleteRequests(selectedRow)">
+            <clr-icon shape="times" size="16"></clr-icon>&nbsp;{{'REQUEST.DELETE' | translate}}
+        </button>
     </clr-dg-action-bar>
     <clr-dg-column [clrDgSortBy]="'name'">{{'REQUEST.NAME' | translate}}</clr-dg-column>
+    <clr-dg-column [clrDgSortBy]="'owner_name'">{{'REQUEST.OWNER_NAME' | translate}}</clr-dg-column>
     <clr-dg-column [clrDgSortBy]="'creation_time'">{{'REQUEST.CREATION_TIME' | translate}}</clr-dg-column>
+    <clr-dg-column [clrDgSortBy]="'approved'">{{'REQUEST.IS_APPROVED' | translate}}</clr-dg-column>
     <clr-dg-row *ngFor="let p of requests" [clrDgItem]="p">
         <clr-dg-cell>{{p.name}}</clr-dg-cell>
+        <clr-dg-cell>{{p.owner_name}}</clr-dg-cell>
         <clr-dg-cell>{{p.creation_time | harborDatetime: 'short'}}</clr-dg-cell>
+        <clr-dg-cell>{{approvedTypeMap[p.is_approved] | translate}}</clr-dg-cell>
     </clr-dg-row>
     <clr-dg-footer>
-        <clr-dg-pagination #pagination  [clrDgPageSize]="pageSize" [(clrDgPage)]="currentPage" [clrDgTotalItems]="totalCount">
-             <clr-dg-page-size [clrPageSizeOptions]="[15,25,50]">{{"PAGINATION.PAGE_SIZE" | translate}}</clr-dg-page-size>
-        <span *ngIf="totalCount">{{pagination.firstItem + 1}} - {{pagination.lastItem +1 }} {{'REQUEST.OF' | translate}} </span> {{totalCount
-        }} {{'REQUEST.ITEMS' | translate}}
+        <clr-dg-pagination #pagination [clrDgPageSize]="pageSize" [(clrDgPage)]="currentPage"
+                           [clrDgTotalItems]="totalCount">
+            <clr-dg-page-size [clrPageSizeOptions]="[15,25,50]">{{"PAGINATION.PAGE_SIZE" | translate}}
+            </clr-dg-page-size>
+            <span *ngIf="totalCount">{{pagination.firstItem + 1}} - {{pagination.lastItem +1 }} {{'REQUEST.OF' | translate}} </span>
+            {{totalCount
+            }} {{'REQUEST.ITEMS' | translate}}
         </clr-dg-pagination>
     </clr-dg-footer>
 </clr-datagrid>

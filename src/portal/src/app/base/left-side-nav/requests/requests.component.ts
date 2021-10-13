@@ -107,6 +107,7 @@ export class RequestsComponent implements OnInit, OnDestroy {
         let account = this.session.getCurrentUser();
         return account != null && account.has_admin_role;
     }
+
     openModal(): void {
         this.creationRequest.newRequest();
     }

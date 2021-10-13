@@ -71,11 +71,11 @@ type controller struct {
 	userMgr    user.Manager
 }
 
-func (c *controller) Create(ctx context.Context, project *models.Request) (int64, error) {
+func (c *controller) Create(ctx context.Context, request *models.Request) (int64, error) {
 	log.Info("[controller]: Create Request")
 	var requestID int64
 	h := func(ctx context.Context) (err error) {
-		requestID, err = c.requestMgr.Create(ctx, project)
+		requestID, err = c.requestMgr.Create(ctx, request)
 		if err != nil {
 			return err
 		}
@@ -89,7 +89,7 @@ func (c *controller) Create(ctx context.Context, project *models.Request) (int64
 	// TODO: fire event
 	//e := &event.CreateProjectEventMetadata{
 	//	ProjectID: requestID,
-	//	Project:   project.Name,
+	//	Project:   request.Name,
 	//	Operator:  operator.FromContext(ctx),
 	//}
 	//notification.AddEvent(ctx, e)
@@ -102,10 +102,10 @@ func (c *controller) Count(ctx context.Context, query *q.Query) (int64, error) {
 }
 
 func (c *controller) Delete(ctx context.Context, id int64) error {
-	//proj, err := c.Get(ctx, id)
-	//if err != nil {
-	//	return err
-	//}
+	_, err := c.Get(ctx, id)
+	if err != nil {
+		return err
+	}
 
 	if err := c.requestMgr.Delete(ctx, id); err != nil {
 		return err
@@ -157,7 +157,7 @@ func (c *controller) GetByName(ctx context.Context, requestName string, options 
 		return nil, err
 	}
 
-	if err := c.assembleRequests(ctx, models.Requests{p}); err != nil {
+	if err := c.assembleRequests(ctx, models.Requests{p}, options...); err != nil {
 		return nil, err
 	}
 

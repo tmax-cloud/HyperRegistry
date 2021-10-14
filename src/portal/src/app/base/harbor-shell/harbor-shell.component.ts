@@ -206,6 +206,19 @@ export class HarborShellComponent implements OnInit, OnDestroy {
     public get withAdmiral(): boolean {
         return this.appConfigService.getConfig().with_admiral;
     }
+
+    get requestActivationRestriction(): boolean {
+        let account = this.session.getCurrentUser();
+        if (account) {
+            switch (this.appConfigService.getConfig().project_creation_restriction) {
+                case "adminonly":
+                    return true;
+                case "everyone":
+                    return false;
+            }
+        }
+        return false;
+    }
     // Open modal dialog
     openModal(event: ModalEvent): void {
         switch (event.modalName) {

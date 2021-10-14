@@ -49,7 +49,9 @@ export const enum ConfirmationTargets {
   PROJECT_ROBOT_ACCOUNT,
   PROJECT_ROBOT_ACCOUNT_ENABLE_OR_DISABLE,
   WEBHOOK,
-  REQUEST = 27
+  REQUEST_DELETION = 27 ,
+  REQUEST_APPROVE = 28 ,
+  REQUEST_REJECT = 29
 }
 
 export const enum ActionType {
@@ -201,6 +203,8 @@ export const HarborQueryParamKey = "harbor_redirect_url";
 export const CookieKeyOfAdmiral = "admiral.endpoint.latest";
 
 export const ProjectTypes = { 0: 'PROJECT.ALL_PROJECTS', 1: 'PROJECT.PRIVATE_PROJECTS', 2: 'PROJECT.PUBLIC_PROJECTS' };
+
+export const RequestTypes = { 0: 'REQUEST.ALL_REQUESTS', 1: 'REQUEST.APPROVED_REQUESTS', 2: 'REQUEST.REJECTED_REQUESTS' };
 
 export const RoleInfo = {
   1: "MEMBER.PROJECT_ADMIN",

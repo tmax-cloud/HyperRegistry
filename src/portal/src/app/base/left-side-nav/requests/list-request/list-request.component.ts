@@ -60,43 +60,34 @@ export class ListRequestComponent implements OnDestroy {
         private reqService: RequestService,
         private msgHandler: MessageHandlerService,
         private translate: TranslateService,
-        private deletionDialogService: ConfirmationDialogService,
-        private approveDialogService: ConfirmationDialogService,
-        private denyDialogService: ConfirmationDialogService,
+        private dialogService: ConfirmationDialogService,
         private operationService: OperationService,
         private translateService: TranslateService) {
-        this.deleteSubscription = deletionDialogService.confirmationConfirm$.subscribe(message => {
+        this.actionSubscription = dialogService.confirmationConfirm$.subscribe(message => {
             if (message &&
                 message.state === ConfirmationState.CONFIRMED &&
-                message.source === ConfirmationTargets.REQUEST) {
+                message.source === ConfirmationTargets.REQUEST_DELETION) {
                 this.delRequests(message.data);
-            }
-        });
-        this.approveSubscription = approveDialogService.confirmationConfirm$.subscribe(message => {
-            if (message &&
+            } else if (message &&
                 message.state === ConfirmationState.CONFIRMED &&
-                message.source === ConfirmationTargets.REQUEST) {
+                message.source === ConfirmationTargets.REQUEST_APPROVE) {
                 this.allowRequests(message.data);
-            }
-        });
-        this.denySubscription = denyDialogService.confirmationConfirm$.subscribe(message => {
-            if (message &&
+            } else if (message &&
                 message.state === ConfirmationState.CONFIRMED &&
-                message.source === ConfirmationTargets.REQUEST) {
+                message.source === ConfirmationTargets.REQUEST_REJECT) {
                 this.rejectRequests(message.data);
             }
         });
+
     }
-    deleteSubscription: Subscription;
-    approveSubscription: Subscription;
-    denySubscription: Subscription;
+    actionSubscription: Subscription;
 
     state: ClrDatagridStateInterface;
 
     approvedTypeMap: any = {
-        0: "REQUEST.NOT_YET",
+        0: "REQUEST.UNDETERMINED",
         1: "REQUEST.APPROVED",
-        2: "REQUEST.DENIED"
+        2: "REQUEST.REJECTED"
     };
 
     get requestCreationRestriction(): boolean {
@@ -127,14 +118,8 @@ export class ListRequestComponent implements OnDestroy {
     }
 
     ngOnDestroy(): void {
-        if (this.deleteSubscription) {
-            this.deleteSubscription.unsubscribe();
-        }
-        if (this.approveSubscription) {
-            this.approveSubscription.unsubscribe();
-        }
-        if (this.denySubscription) {
-            this.denySubscription.unsubscribe();
+        if (this.actionSubscription) {
+            this.actionSubscription.unsubscribe();
         }
     }
 
@@ -190,10 +175,10 @@ export class ListRequestComponent implements OnDestroy {
                 "REQUEST.DELETION_SUMMARY",
                 nameArr.join(","),
                 r,
-                ConfirmationTargets.REQUEST,
+                ConfirmationTargets.REQUEST_DELETION,
                 ConfirmationButtons.DELETE_CANCEL
             );
-            this.deletionDialogService.openComfirmDialog(deletionMessage);
+            this.dialogService.openComfirmDialog(deletionMessage);
         }
     }
 
@@ -208,10 +193,10 @@ export class ListRequestComponent implements OnDestroy {
                 "REQUEST.APPROVE_SUMMARY",
                 nameArr.join(","),
                 r,
-                ConfirmationTargets.REQUEST,
+                ConfirmationTargets.REQUEST_APPROVE,
                 ConfirmationButtons.YES_NO
             );
-            this.approveDialogService.openComfirmDialog(approveMessage);
+            this.dialogService.openComfirmDialog(approveMessage);
         }
     }
 
@@ -222,14 +207,14 @@ export class ListRequestComponent implements OnDestroy {
                 nameArr.push(data.name);
             });
             let denyMessage = new ConfirmationMessage(
-                "REQUEST.DENY_TITLE",
-                "REQUEST.DENY_SUMMARY",
+                "REQUEST.REJECT_TITLE",
+                "REQUEST.REJECT_SUMMARY",
                 nameArr.join(","),
                 r,
-                ConfirmationTargets.REQUEST,
+                ConfirmationTargets.REQUEST_REJECT,
                 ConfirmationButtons.YES_NO
             );
-            this.denyDialogService.openComfirmDialog(denyMessage);
+            this.dialogService.openComfirmDialog(denyMessage);
         }
     }
 
@@ -347,12 +332,12 @@ export class ListRequestComponent implements OnDestroy {
     denyOperate(request: Request) {
         // init operation info
         let operMessage = new OperateInfo();
-        operMessage.name = 'OPERATION.DENY_PROJECT';
+        operMessage.name = 'OPERATION.REJECT_REQUEST';
         operMessage.data.id = request.request_id;
         operMessage.state = OperationState.progressing;
         operMessage.data.name = request.name;
         this.operationService.publishInfo(operMessage);
-        return this.reqService.denyRequest(request.request_id)
+        return this.reqService.rejectRequest(request.request_id)
             .pipe(map(
                 () => {
                     operateChanges(operMessage, OperationState.success);

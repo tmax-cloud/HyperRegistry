@@ -1223,7 +1223,7 @@
     "SECOND_AGO": "less than 1 minute",
     "EVENT_LOG": "EVENT LOG",
     "APPROVE_REQUEST": "Approve request",
-    "DENY_REQUEST": "Deny request"
+    "REJECT_REQUEST": "Reject request"
   },
   "UNKNOWN_ERROR": "Unknown errors have occurred. Please try again later.",
   "UNAUTHORIZED_ERROR": "Your session is invalid or has expired. You need to sign in to continue your action.",
@@ -1746,15 +1746,15 @@
     "PROXY_CACHE_ENDPOINT": "Proxy Cache Endpoint",
     "NO_PROJECT": "We couldn't find any projects",
     "OWNER_NAME": "Owner",
-    "IS_APPROVED": "Is Approved?",
-    "NOT_YET": "-",
+    "IS_APPROVED": "Approved?",
+    "UNDETERMINED": "-",
     "APPROVE": "Approve",
     "APPROVED": "Approved",
-    "DENY": "Deny",
-    "DENIED": "Denied",
+    "REJECT": "Reject",
+    "REJECTED": "Rejected",
     "APPROVE_TITLE": "Confirm approve request",
     "APPROVE_SUMMARY": "Do you want to approve request {{param}}?",
-    "DENY_TITLE": "Confirm deny request",
-    "DENY_SUMMARY": "Do you want to deny request {{param}}?"
+    "REJECT_TITLE": "Confirm reject request",
+    "REJECT_SUMMARY": "Do you want to reject request {{param}}?"
   }
 }

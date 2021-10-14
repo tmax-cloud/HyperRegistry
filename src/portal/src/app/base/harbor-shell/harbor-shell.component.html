@@ -31,8 +31,8 @@
                     <clr-icon shape="organization" clrVerticalNavIcon></clr-icon>
                     {{'SIDE_NAV.PROJECTS' | translate}}
                 </a>
-                <a clrVerticalNavLink routerLinkActive="active" routerLink="/harbor/requests">
-                    <clr-icon shape="list" clrVerticalNavIcon></clr-icon>
+                <a clrVerticalNavLink routerLinkActive="active" routerLink="/harbor/requests" *ngIf="requestActivationRestriction">
+                    <clr-icon shape="form" clrVerticalNavIcon></clr-icon>
                     {{'SIDE_NAV.REQUESTS' | translate}}
                 </a>
                 <a clrVerticalNavLink routerLinkActive="active" routerLink="/harbor/logs">

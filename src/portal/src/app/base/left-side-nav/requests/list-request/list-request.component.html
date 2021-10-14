@@ -10,7 +10,7 @@
         </button>
         <button type="button" class="btn btn-secondary" *ngIf="!requestCreationRestriction" [disabled]="!canDelete"
                 (click)="denyRequests(selectedRow)">
-            <clr-icon shape="minus-circle" size="16"></clr-icon>&nbsp;{{'REQUEST.DENY' | translate}}
+            <clr-icon shape="minus-circle" size="16"></clr-icon>&nbsp;{{'REQUEST.REJECT' | translate}}
         </button>
         <button id="delete-project" type="button" class="btn  btn-secondary" [disabled]="!canDelete"
                 (click)="deleteRequests(selectedRow)">

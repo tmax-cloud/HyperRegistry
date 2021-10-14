@@ -26,13 +26,15 @@ type Request struct {
 }
 
 // ToSwagger converts the request to the swagger model
-func (p *Request) ToSwagger() *models.Request {
+func (r *Request) ToSwagger() *models.Request {
 	return &models.Request{
-		CreationTime: strfmt.DateTime(p.CreationTime),
-		Name:         p.Name,
-		OwnerName:    p.OwnerName,
-		RequestID:    int32(p.RequestID),
-		UpdateTime:   strfmt.DateTime(p.UpdateTime),
+		CreationTime: strfmt.DateTime(r.CreationTime),
+		Name:         r.Name,
+		OwnerID:      int32(r.OwnerID),
+		OwnerName:    r.OwnerName,
+		RequestID:    int32(r.RequestID),
+		UpdateTime:   strfmt.DateTime(r.UpdateTime),
+		IsApproved:   int32(r.IsApproved),
 	}
 }
 

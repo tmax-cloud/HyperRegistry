@@ -35,7 +35,6 @@ const (
 )
 
 func init() {
-	fmt.Println("%%%%%%%%%% Register Project Model %%%%%%%%%")
 	orm.RegisterModel(&Project{})
 }
 

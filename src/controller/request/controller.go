@@ -54,8 +54,10 @@ type Controller interface {
 	GetByName(ctx context.Context, requestName string, options ...Option) (*models.Request, error)
 	// List list requests
 	List(ctx context.Context, query *q.Query, options ...Option) ([]*models.Request, error)
-	// Update update the project
-	Update(ctx context.Context, project *models.Request) error
+	// Approve the request
+	Approve(ctx context.Context, project *models.Request) error
+	// Reject the request
+	Reject(ctx context.Context, project *models.Request) error
 }
 
 // NewController creates an instance of the default project controller
@@ -72,7 +74,6 @@ type controller struct {
 }
 
 func (c *controller) Create(ctx context.Context, request *models.Request) (int64, error) {
-	log.Info("[controller]: Create Request")
 	var requestID int64
 	h := func(ctx context.Context) (err error) {
 		requestID, err = c.requestMgr.Create(ctx, request)
@@ -134,7 +135,6 @@ func (c *controller) Exists(ctx context.Context, requestIDOrName interface{}) (b
 }
 
 func (c *controller) Get(ctx context.Context, requestIDOrName interface{}, options ...Option) (*models.Request, error) {
-	log.Info("[controller]: Get Request")
 	r, err := c.requestMgr.Get(ctx, requestIDOrName)
 	if err != nil {
 		return nil, err
@@ -149,24 +149,22 @@ func (c *controller) Get(ctx context.Context, requestIDOrName interface{}, optio
 
 func (c *controller) GetByName(ctx context.Context, requestName string, options ...Option) (*models.Request, error) {
 	if requestName == "" {
-		return nil, errors.BadRequestError(nil).WithMessage("project name required")
+		return nil, errors.BadRequestError(nil).WithMessage("request name required")
 	}
 
-	p, err := c.requestMgr.Get(ctx, requestName)
+	r, err := c.requestMgr.Get(ctx, requestName)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := c.assembleRequests(ctx, models.Requests{p}, options...); err != nil {
+	if err := c.assembleRequests(ctx, models.Requests{r}, options...); err != nil {
 		return nil, err
 	}
 
-	return p, nil
+	return r, nil
 }
 
 func (c *controller) List(ctx context.Context, query *q.Query, options ...Option) ([]*models.Request, error) {
-	log.Info("[controller]: List Request")
-
 	requests, err := c.requestMgr.List(ctx, query)
 	if err != nil {
 		return nil, err
@@ -183,8 +181,17 @@ func (c *controller) List(ctx context.Context, query *q.Query, options ...Option
 	return requests, nil
 }
 
-func (c *controller) Update(ctx context.Context, p *models.Request) error {
+func (c *controller) Approve(ctx context.Context, p *models.Request) error {
+	if err := c.requestMgr.Approve(ctx, p); err != nil {
+		return err
+	}
+	return nil
+}
 
+func (c *controller) Reject(ctx context.Context, p *models.Request) error {
+	if err := c.requestMgr.Reject(ctx, p); err != nil {
+		return err
+	}
 	return nil
 }
 

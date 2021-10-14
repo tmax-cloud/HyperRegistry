@@ -46,6 +46,12 @@ type Manager interface {
 
 	// List requests according to the query
 	List(ctx context.Context, query *q.Query) ([]*models.Request, error)
+
+	//
+	Approve(ctx context.Context, request *models.Request) error
+
+	//
+	Reject(ctx context.Context, request *models.Request) error
 }
 
 // New returns a default implementation of Manager
@@ -110,4 +116,16 @@ func (m *manager) Get(ctx context.Context, idOrName interface{}) (*models.Reques
 // List requests according to the query
 func (m *manager) List(ctx context.Context, query *q.Query) ([]*models.Request, error) {
 	return m.dao.List(ctx, query)
+}
+
+func (m *manager) Approve(ctx context.Context, request *models.Request) error {
+	cols := []string{"IsApproved"}
+	request.IsApproved = models.Approved
+	return m.dao.Update(ctx, request, cols...)
+}
+
+func (m *manager) Reject(ctx context.Context, request *models.Request) error {
+	cols := []string{"IsApproved"}
+	request.IsApproved = models.Rejected
+	return m.dao.Update(ctx, request, cols...)
 }

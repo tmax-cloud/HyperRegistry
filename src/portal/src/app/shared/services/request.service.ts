@@ -40,7 +40,6 @@ export abstract class RequestService {
      *  ** deprecated param {number} pageSize
      * returns {(Observable<any>)}
      *
-     * @memberOf EndpointService
      */
     abstract listRequests(
         name: string,
@@ -51,7 +50,7 @@ export abstract class RequestService {
     abstract createRequest(name: string): Observable<any>;
     abstract deleteRequest(requestId: number): Observable<any>;
     abstract approveRequest(requestId: number): Observable<any>;
-    abstract denyRequest(requestId: number): Observable<any>;
+    abstract rejectRequest(requestId: number): Observable<any>;
     abstract checkRequestExists(requestName: string): Observable<any>;
 }
 
@@ -107,25 +106,25 @@ export class RequestDefaultService extends RequestService {
 
     public deleteRequest(requestId: number): Observable<any> {
         return this.http
-            .delete(`${CURRENT_BASE_HREF}/requests/${requestId}`)
+            .delete(`${CURRENT_BASE_HREF}/request/${requestId}`)
             .pipe(catchError(error => observableThrowError(error)));
     }
 
     public approveRequest(requestId: number): Observable<any> {
         return this.http
-            .put(`${CURRENT_BASE_HREF}/requests/${requestId}/_approve`, "")
+            .put(`${CURRENT_BASE_HREF}/request/${requestId}/_approve`, "")
             .pipe(catchError(error => observableThrowError(error)));
     }
 
-    public denyRequest(requestId: number): Observable<any> {
+    public rejectRequest(requestId: number): Observable<any> {
         return this.http
-            .put(`${CURRENT_BASE_HREF}/requests/${requestId}/_deny`, "")
+            .put(`${CURRENT_BASE_HREF}/request/${requestId}/_reject`, "")
             .pipe(catchError(error => observableThrowError(error)));
     }
 
     public checkRequestExists(requestName: string): Observable<any> {
         return this.http
-            .head(`${CURRENT_BASE_HREF}/requests/?request_name=${requestName}`).pipe(
+            .head(`${CURRENT_BASE_HREF}/request/?request_name=${requestName}`).pipe(
                 catchError(error => {
                     if (error && error.status === 404) {
                         return of(error);

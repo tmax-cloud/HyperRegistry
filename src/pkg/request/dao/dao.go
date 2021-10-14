@@ -17,6 +17,8 @@ package dao
 import (
 	"context"
 	"fmt"
+	"github.com/goharbor/harbor/src/lib/errors"
+	"github.com/goharbor/harbor/src/lib/log"
 	"time"
 
 	"github.com/goharbor/harbor/src/lib"
@@ -39,6 +41,8 @@ type DAO interface {
 	GetByName(ctx context.Context, name string) (*models.Request, error)
 	// List list requests
 	List(ctx context.Context, query *q.Query) ([]*models.Request, error)
+	// Update request
+	Update(ctx context.Context, request *models.Request, props ...string) error
 }
 
 // New returns an instance of the default DAO
@@ -150,5 +154,23 @@ func (d *dao) List(ctx context.Context, query *q.Query) ([]*models.Request, erro
 		return nil, err
 	}
 
+	for _, r := range requests {
+		log.Info(*r)
+	}
 	return requests, nil
+}
+
+func (d *dao) Update(ctx context.Context, request *models.Request, props ...string) error {
+	ormer, err := orm.FromContext(ctx)
+	if err != nil {
+		return err
+	}
+	n, err := ormer.Update(request, props...)
+	if err != nil {
+		return err
+	}
+	if n == 0 {
+		return errors.NotFoundError(nil).WithMessage("request with id %d not found", request.RequestID)
+	}
+	return nil
 }

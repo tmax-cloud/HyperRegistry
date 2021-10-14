@@ -24,6 +24,12 @@ import (
 )
 
 const (
+	NotDetermined = 0
+	Approved      = 1
+	Rejected      = 2
+)
+
+const (
 	// RequestTable is the table name for request
 	RequestTable = "request"
 )

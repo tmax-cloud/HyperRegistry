@@ -5395,7 +5395,7 @@ paths:
           $ref: '#/responses/409'
         '500':
           $ref: '#/responses/500'
-  '/requests/{request_name_or_id}':
+  '/request/{request_name_or_id}':
     get:
       summary: Return specific request detail information
       description: This endpoint returns specific request information by request ID.
@@ -5413,35 +5413,6 @@ paths:
             $ref: '#/definitions/Request'
         '401':
           $ref: '#/responses/401'
-        '500':
-          $ref: '#/responses/500'
-    put:
-      summary: Update properties for a selected request.
-      description: This endpoint is aimed to update the properties of a request.
-      tags:
-        - request
-      operationId: updateRequest
-      parameters:
-        - $ref: '#/parameters/requestId'
-        - $ref: '#/parameters/isResourceName'
-        - $ref: '#/parameters/requestNameOrId'
-        - name: request
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/Request'
-          description: Updates of request.
-      responses:
-        '200':
-          $ref: '#/responses/200'
-        '400':
-          $ref: '#/responses/400'
-        '401':
-          $ref: '#/responses/401'
-        '403':
-          $ref: '#/responses/403'
-        '404':
-          $ref: '#/responses/404'
         '500':
           $ref: '#/responses/500'
     delete:
@@ -5467,7 +5438,7 @@ paths:
           $ref: '#/responses/412'
         '500':
           $ref: '#/responses/500'
-  '/requests/{request_name_or_id}/_approve':
+  '/request/{request_name_or_id}/_approve':
     put:
       summary: Approve project creation request
       description: This endpoint is aimed to approve project request by request ID.
@@ -5491,7 +5462,7 @@ paths:
           $ref: '#/responses/404'
         '500':
           $ref: '#/responses/500'
-  '/requests/{request_name_or_id}/_reject':
+  '/request/{request_name_or_id}/_reject':
     put:
       summary: Reject project creation request
       description: This endpoint is aimed to reject project request by request ID.

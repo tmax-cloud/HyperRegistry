@@ -216,14 +216,14 @@ func (c *controller) loadOwners(ctx context.Context, requests models.Requests) e
 		return err
 	}
 	m := owners.MapByUserID()
-	for _, p := range requests {
-		owner, ok := m[p.OwnerID]
+	for _, r := range requests {
+		owner, ok := m[r.OwnerID]
 		if !ok {
-			log.G(ctx).Warningf("the owner of project %s is not found, owner id is %d", p.Name, p.OwnerID)
+			log.G(ctx).Warningf("the owner of project %s is not found, owner id is %d", r.Name, r.OwnerID)
 			continue
 		}
 
-		p.OwnerName = owner.Username
+		r.OwnerName = owner.Username
 	}
 
 	return nil

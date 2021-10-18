@@ -18,7 +18,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/goharbor/harbor/src/lib/errors"
-	"github.com/goharbor/harbor/src/lib/log"
 	"time"
 
 	"github.com/goharbor/harbor/src/lib"
@@ -154,9 +153,6 @@ func (d *dao) List(ctx context.Context, query *q.Query) ([]*models.Request, erro
 		return nil, err
 	}
 
-	for _, r := range requests {
-		log.Info(*r)
-	}
 	return requests, nil
 }
 

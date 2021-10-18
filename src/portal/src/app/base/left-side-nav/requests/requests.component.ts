@@ -24,6 +24,7 @@ import { debounceTime, distinctUntilChanged, finalize, switchMap } from 'rxjs/op
 import { Request } from './request';
 import { MessageHandlerService } from '../../../shared/services/message-handler.service';
 import { getSortingString } from "../../../shared/units/utils";
+import {RequestTypes} from "../../../shared/entities/shared.const";
 
 @Component({
     selector: 'requests',
@@ -31,6 +32,7 @@ import { getSortingString } from "../../../shared/units/utils";
     styleUrls: ['./requests.component.scss']
 })
 export class RequestsComponent implements OnInit, OnDestroy {
+    requestTypes = RequestTypes;
     quotaObj: QuotaHardInterface;
     @ViewChild(CreateRequestComponent)
     creationRequest: CreateRequestComponent;

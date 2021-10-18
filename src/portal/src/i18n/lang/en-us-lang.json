@@ -1755,6 +1755,9 @@
     "APPROVE_TITLE": "Confirm approve request",
     "APPROVE_SUMMARY": "Do you want to approve request {{param}}?",
     "REJECT_TITLE": "Confirm reject request",
-    "REJECT_SUMMARY": "Do you want to reject request {{param}}?"
+    "REJECT_SUMMARY": "Do you want to reject request {{param}}?",
+    "NOT_YET": "undetermined",
+    "YES": "yes",
+    "NO": "no"
   }
 }

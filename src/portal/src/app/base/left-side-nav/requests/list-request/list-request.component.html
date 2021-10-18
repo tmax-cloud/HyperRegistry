@@ -4,12 +4,12 @@
                 (click)="addNewRequest()">
             <clr-icon shape="plus" size="16"></clr-icon>&nbsp;{{'REQUEST.NEW_REQUEST' | translate}}
         </button>
-        <button type="button" class="btn btn-secondary" *ngIf="!requestCreationRestriction" [disabled]="!canDelete"
+        <button type="button" class="btn btn-secondary" *ngIf="!requestCreationRestriction" [disabled]="!canApprove"
                 (click)="approveRequests(selectedRow)">
             <clr-icon shape="plus-circle" size="16"></clr-icon>&nbsp;{{'REQUEST.APPROVE' | translate}}
         </button>
-        <button type="button" class="btn btn-secondary" *ngIf="!requestCreationRestriction" [disabled]="!canDelete"
-                (click)="denyRequests(selectedRow)">
+        <button type="button" class="btn btn-secondary" *ngIf="!requestCreationRestriction" [disabled]="!canReject"
+                (click)="rejectRequests(selectedRow)">
             <clr-icon shape="minus-circle" size="16"></clr-icon>&nbsp;{{'REQUEST.REJECT' | translate}}
         </button>
         <button id="delete-project" type="button" class="btn  btn-secondary" [disabled]="!canDelete"

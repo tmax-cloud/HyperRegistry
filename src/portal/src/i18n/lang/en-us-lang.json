@@ -1707,9 +1707,7 @@
     "FINAL_SYSTEM_NAME_TIP": "The final system robot name consists of the prefix and the current input value",
     "PUSH_AND_PULL": "Push",
     "PUSH_PERMISSION_TOOLTIP": "Push permission can not work alone, it must work with pull permission",
-    "STOP": "Stop",
-    "LIST": "List",
-    "REPOSITORY": "Repository"
+    "STOP": "Stop"
   },
   "REQUEST": {
     "REQUESTS": "Project Requests",
@@ -1720,9 +1718,6 @@
     "PUBLIC_OR_PRIVATE": "Access Level",
     "CREATION_TIME": "Creation Time",
     "ACCESS_LEVEL": "Access Level",
-    "PUBLIC": "Public",
-    "PRIVATE": "Private",
-    "MAKE": "Make",
     "DELETE": "Delete",
     "ALL_REQUESTS": "All Requests",
     "NAME_TOOLTIP": "Project name should be 1~255 characters long with lower case characters, numbers and ._- and must be start with characters or numbers.",

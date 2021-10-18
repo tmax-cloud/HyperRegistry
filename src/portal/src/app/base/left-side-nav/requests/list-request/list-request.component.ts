@@ -27,11 +27,7 @@ import {OperationService} from "../../../../shared/components/operation/operatio
 import {operateChanges, OperateInfo, OperationState} from "../../../../shared/components/operation/operate";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ClrDatagridStateInterface} from '@clr/angular';
-import {
-    ConfirmationButtons,
-    ConfirmationState,
-    ConfirmationTargets,
-} from "../../../../shared/entities/shared.const";
+import {ConfirmationButtons, ConfirmationState, ConfirmationTargets} from "../../../../shared/entities/shared.const";
 import {ConfirmationDialogService} from "../../../global-confirmation-dialog/confirmation-dialog.service";
 import {errorHandler} from "../../../../shared/units/shared.utils";
 import {ConfirmationMessage} from "../../../global-confirmation-dialog/confirmation-message";
@@ -52,6 +48,7 @@ export class ListRequestComponent implements OnDestroy {
     totalCount = 0;
     pageSize = 15;
     currentState: State;
+
     constructor(
         private session: SessionService,
         private appConfigService: AppConfigService,
@@ -67,27 +64,28 @@ export class ListRequestComponent implements OnDestroy {
             if (message &&
                 message.state === ConfirmationState.CONFIRMED &&
                 message.source === ConfirmationTargets.REQUEST_DELETION) {
-                this.delRequests(message.data);
+                this.onDeleteRequests(message.data);
             } else if (message &&
                 message.state === ConfirmationState.CONFIRMED &&
                 message.source === ConfirmationTargets.REQUEST_APPROVE) {
-                this.allowRequests(message.data);
+                this.onApproveRequests(message.data);
             } else if (message &&
                 message.state === ConfirmationState.CONFIRMED &&
                 message.source === ConfirmationTargets.REQUEST_REJECT) {
-                this.rejectRequests(message.data);
+                this.onRejectRequests(message.data);
             }
         });
 
     }
+
     actionSubscription: Subscription;
 
     state: ClrDatagridStateInterface;
 
     approvedTypeMap: any = {
-        0: "REQUEST.UNDETERMINED",
-        1: "REQUEST.APPROVED",
-        2: "REQUEST.REJECTED"
+        0: "REQUEST.NOT_YET",
+        1: "REQUEST.YES",
+        2: "REQUEST.NO"
     };
 
     get requestCreationRestriction(): boolean {
@@ -113,8 +111,21 @@ export class ListRequestComponent implements OnDestroy {
             return false;
         }
 
-        // return this.isSystemAdmin || this.selectedRow.every((pro: Request) => pro.current_user_role_id === 1);
         return true;
+    }
+
+    public get canApprove(): boolean {
+        if (!this.selectedRow.length) {
+            return false;
+        }
+        return this.selectedRow.every((r: Request) => r.is_approved !== 1);
+    }
+
+    public get canReject(): boolean {
+        if (!this.selectedRow.length) {
+            return false;
+        }
+        return this.selectedRow.every((r: Request) => r.is_approved !== 1 && r.is_approved !== 2);
     }
 
     ngOnDestroy(): void {
@@ -200,7 +211,7 @@ export class ListRequestComponent implements OnDestroy {
         }
     }
 
-    denyRequests(r: Request[]) {
+    rejectRequests(r: Request[]) {
         let nameArr: string[] = [];
         if (r && r.length) {
             r.forEach(data => {
@@ -218,11 +229,11 @@ export class ListRequestComponent implements OnDestroy {
         }
     }
 
-    delRequests(requests: Request[]) {
+    onDeleteRequests(requests: Request[]) {
         let observableLists: any[] = [];
         if (requests && requests.length) {
             requests.forEach(data => {
-                observableLists.push(this.delOperate(data));
+                observableLists.push(this.handleDeleteOperation(data));
             });
             forkJoin(...observableLists).subscribe(resArr => {
                 let error;
@@ -251,11 +262,11 @@ export class ListRequestComponent implements OnDestroy {
         }
     }
 
-    allowRequests(requests: Request[]): void {
+    onApproveRequests(requests: Request[]): void {
         let observableLists: any[] = [];
         if (requests && requests.length) {
             requests.forEach(data => {
-                observableLists.push(this.approveOperate(data));
+                observableLists.push(this.handleApproveOperation(data));
             });
             forkJoin(...observableLists).subscribe(resArr => {
                 let error;
@@ -279,11 +290,11 @@ export class ListRequestComponent implements OnDestroy {
         }
     }
 
-    rejectRequests(requests: Request[]): void {
+    onRejectRequests(requests: Request[]): void {
         let observableLists: any[] = [];
         if (requests && requests.length) {
             requests.forEach(data => {
-                observableLists.push(this.denyOperate(data));
+                observableLists.push(this.handleRejectOperatation(data));
             });
             forkJoin(...observableLists).subscribe(resArr => {
                 let error;
@@ -307,7 +318,7 @@ export class ListRequestComponent implements OnDestroy {
         }
     }
 
-    approveOperate(request: Request) {
+    handleApproveOperation(request: Request) {
         // init operation info
         let operMessage = new OperateInfo();
         operMessage.name = 'OPERATION.APPROVE_PROJECT';
@@ -329,7 +340,7 @@ export class ListRequestComponent implements OnDestroy {
                 }));
     }
 
-    denyOperate(request: Request) {
+    handleRejectOperatation(request: Request) {
         // init operation info
         let operMessage = new OperateInfo();
         operMessage.name = 'OPERATION.REJECT_REQUEST';
@@ -351,7 +362,7 @@ export class ListRequestComponent implements OnDestroy {
                 }));
     }
 
-    delOperate(request: Request) {
+    handleDeleteOperation(request: Request) {
         // init operation info
         let operMessage = new OperateInfo();
         operMessage.name = 'OPERATION.DELETE_PROJECT';

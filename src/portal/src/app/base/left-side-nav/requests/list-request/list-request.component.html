@@ -20,7 +20,7 @@
     <clr-dg-column [clrDgSortBy]="'name'">{{'REQUEST.NAME' | translate}}</clr-dg-column>
     <clr-dg-column [clrDgSortBy]="'owner_name'">{{'REQUEST.OWNER_NAME' | translate}}</clr-dg-column>
     <clr-dg-column [clrDgSortBy]="'creation_time'">{{'REQUEST.CREATION_TIME' | translate}}</clr-dg-column>
-    <clr-dg-column [clrDgSortBy]="'approved'">{{'REQUEST.IS_APPROVED' | translate}}</clr-dg-column>
+    <clr-dg-column [clrDgSortBy]="'is_approved'">{{'REQUEST.IS_APPROVED' | translate}}</clr-dg-column>
     <clr-dg-row *ngFor="let p of requests" [clrDgItem]="p">
         <clr-dg-cell>{{p.name}}</clr-dg-cell>
         <clr-dg-cell>{{p.owner_name}}</clr-dg-cell>

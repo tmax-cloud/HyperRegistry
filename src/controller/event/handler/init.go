@@ -60,6 +60,8 @@ func init() {
 	// internal
 	notifier.Subscribe(event.TopicPullArtifact, &internal.Handler{})
 	notifier.Subscribe(event.TopicPushArtifact, &internal.Handler{})
+	notifier.Subscribe(event.TopicApproveRequest, &internal.Handler{})
+	notifier.Subscribe(event.TopicRejectRequest, &internal.Handler{})
 
 	task.RegisterTaskStatusChangePostFunc(job.Replication, func(ctx context.Context, taskID int64, status string) error {
 		notification.AddEvent(ctx, &metadata.ReplicationMetaData{

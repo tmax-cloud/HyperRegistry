@@ -16,6 +16,8 @@ package internal
 
 import (
 	"context"
+	"github.com/goharbor/harbor/src/common/utils/email"
+	"github.com/goharbor/harbor/src/lib/config"
 	"time"
 
 	"github.com/goharbor/harbor/src/controller/artifact"
@@ -42,6 +44,11 @@ func (a *Handler) Handle(ctx context.Context, value interface{}) error {
 		return a.onPull(ctx, v.ArtifactEvent)
 	case *event.PushArtifactEvent:
 		return a.onPush(ctx, v.ArtifactEvent)
+	case *event.ApproveRequestEvent:
+		return a.onApprove(ctx, v.RequestEvent)
+	case *event.RejectRequestEvent:
+		return a.onReject(ctx, v.RequestEvent)
+
 	default:
 		log.Errorf("Can not handler this event type! %#v", v)
 	}
@@ -97,4 +104,35 @@ func (a *Handler) onPush(ctx context.Context, event *event.ArtifactEvent) error 
 	}()
 
 	return nil
+}
+
+func (a *Handler) onApprove(ctx context.Context, event *event.RequestEvent) error {
+	go func() {
+		if err := a.sendMail(ctx, event); err != nil {
+			log.Errorf("send mail %s@%s failed, error: %v", event.EventType, event.Project, err)
+		}
+	}()
+
+	return nil
+}
+
+func (a *Handler) onReject(ctx context.Context, event *event.RequestEvent) error {
+	go func() {
+		if err := a.sendMail(ctx, event); err != nil {
+			log.Errorf("send mail %s@%s failed, error: %v", event.EventType, event.Project, err)
+		}
+	}()
+	return nil
+}
+
+func (a *Handler) sendMail(ctx context.Context, event *event.RequestEvent) error {
+	meta, err := config.Email(ctx)
+	if err != nil {
+		return err
+	}
+
+	err = email.Send(meta.Host, meta.Identity, meta.Username, meta.Password, 30, meta.SSL, meta.Insecure, meta.From,
+		[]string{"taejune_ahn@tmax.co.kr"}, "Notice from superregistry: Your Request...", "TEST")
+
+	return err
 }

@@ -16,6 +16,10 @@ package request
 
 import (
 	"context"
+	event "github.com/goharbor/harbor/src/controller/event/metadata"
+	"github.com/goharbor/harbor/src/controller/event/operator"
+	"github.com/goharbor/harbor/src/lib/config"
+	"github.com/goharbor/harbor/src/pkg/notification"
 	"github.com/goharbor/harbor/src/pkg/user"
 
 	//commonmodels "github.com/goharbor/harbor/src/common/models"
@@ -87,14 +91,6 @@ func (c *controller) Create(ctx context.Context, request *models.Request) (int64
 		return 0, err
 	}
 
-	// TODO: fire event
-	//e := &event.CreateProjectEventMetadata{
-	//	ProjectID: requestID,
-	//	Project:   request.Name,
-	//	Operator:  operator.FromContext(ctx),
-	//}
-	//notification.AddEvent(ctx, e)
-
 	return requestID, nil
 }
 
@@ -111,14 +107,6 @@ func (c *controller) Delete(ctx context.Context, id int64) error {
 	if err := c.requestMgr.Delete(ctx, id); err != nil {
 		return err
 	}
-
-	// TODO:
-	//e := &event.DeleteProjectEventMetadata{
-	//	ProjectID: proj.ProjectID,
-	//	Project:   proj.Name,
-	//	Operator:  operator.FromContext(ctx),
-	//}
-	//notification.AddEvent(ctx, e)
 
 	return nil
 }
@@ -185,6 +173,14 @@ func (c *controller) Approve(ctx context.Context, p *models.Request) error {
 	if err := c.requestMgr.Approve(ctx, p); err != nil {
 		return err
 	}
+
+	e := &event.ApproveRequestEventMetadata{
+		ProjectID: requestID,
+		Project:   request.Name,
+		Operator:  operator.FromContext(ctx),
+	}
+	notification.AddEvent(ctx, e)
+
 	return nil
 }
 
@@ -192,6 +188,14 @@ func (c *controller) Reject(ctx context.Context, p *models.Request) error {
 	if err := c.requestMgr.Reject(ctx, p); err != nil {
 		return err
 	}
+
+	e := &event.RejectRequestEventMetadata{
+		ProjectID: proj.ProjectID,
+		Project:   proj.Name,
+		Operator:  operator.FromContext(ctx),
+	}
+	notification.AddEvent(ctx, e)
+
 	return nil
 }
 

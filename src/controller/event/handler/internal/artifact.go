@@ -16,14 +16,19 @@ package internal
 
 import (
 	"context"
+	"fmt"
 	"github.com/goharbor/harbor/src/common/utils/email"
 	"github.com/goharbor/harbor/src/lib/config"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/goharbor/harbor/src/controller/artifact"
 	"github.com/goharbor/harbor/src/controller/event"
+	event2 "github.com/goharbor/harbor/src/controller/event"
 	"github.com/goharbor/harbor/src/controller/repository"
 	"github.com/goharbor/harbor/src/controller/tag"
+	"github.com/goharbor/harbor/src/controller/user"
 	"github.com/goharbor/harbor/src/lib/log"
 	"github.com/goharbor/harbor/src/lib/q"
 )
@@ -122,6 +127,7 @@ func (a *Handler) onReject(ctx context.Context, event *event.RequestEvent) error
 			log.Errorf("send mail %s@%s failed, error: %v", event.EventType, event.Project, err)
 		}
 	}()
+
 	return nil
 }
 
@@ -131,8 +137,31 @@ func (a *Handler) sendMail(ctx context.Context, event *event.RequestEvent) error
 		return err
 	}
 
-	err = email.Send(meta.Host, meta.Identity, meta.Username, meta.Password, 30, meta.SSL, meta.Insecure, meta.From,
-		[]string{"taejune_ahn@tmax.co.kr"}, "Notice from superregistry: Your Request...", "TEST")
+	addr := strings.TrimSpace(strings.Join([]string{meta.Host, strconv.Itoa(meta.Port)}, ":"))
+	owner, err := user.Ctl.Get(ctx, event.OwnerID, &user.Option{})
+	if err != nil {
+		log.Errorf("cannot get (%d)'s user mail info\n", event.OwnerID)
+		return err
+	}
+
+	log.Infof("host: %s/ identity: %s/ user: %s/ password: *****/ ssl: %v/ insecure: %v/ from: %s/ to: %s\n",
+		addr, meta.Identity, meta.Username, meta.SSL, meta.Insecure, meta.From, owner.Email)
+
+	var subject, message string
+	switch event.EventType {
+	case event2.TopicApproveRequest:
+		subject = fmt.Sprintf("[SuperRegistry] Approved request")
+		message = fmt.Sprintf("Hey %s! The project named %s has been created by request.", owner.Username, event.Project)
+	case event2.TopicRejectRequest:
+		subject = fmt.Sprintf("[SuperRegistry] Rejected request")
+		message = fmt.Sprintf("Sorry %s. Please contact admin %s.", owner.Username, event.Operator)
+	default:
+		log.Errorf("undefined event type: %s", event.EventType)
+		return nil
+	}
+
+	err = email.Send(addr, meta.Identity, meta.Username, meta.Password, 5, meta.SSL, meta.Insecure, meta.From,
+		[]string{owner.Email}, subject, message)
 
 	return err
 }

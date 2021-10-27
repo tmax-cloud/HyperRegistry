@@ -24,17 +24,19 @@ import (
 type ApproveRequestEventMetadata struct {
 	ProjectID int64
 	Project   string
+	OwnerID   int
 	Operator  string
 }
 
 // Resolve to the event from the metadata
-func (c *ApproveRequestEventMetadata) Resolve(event *event.Event) error {
+func (m *ApproveRequestEventMetadata) Resolve(event *event.Event) error {
 	event.Topic = event2.TopicApproveRequest
 	event.Data = &event2.ApproveRequestEvent{
 		&event2.RequestEvent{
 			EventType: event2.TopicApproveRequest,
-			Project:   c.Project,
-			Operator:  c.Operator,
+			Project:   m.Project,
+			OwnerID:   m.OwnerID,
+			Operator:  m.Operator,
 			OccurAt:   time.Now(),
 		},
 	}
@@ -45,17 +47,19 @@ func (c *ApproveRequestEventMetadata) Resolve(event *event.Event) error {
 type RejectRequestEventMetadata struct {
 	ProjectID int64
 	Project   string
+	OwnerID   int
 	Operator  string
 }
 
 // Resolve to the event from the metadata
-func (d *RejectRequestEventMetadata) Resolve(event *event.Event) error {
+func (m *RejectRequestEventMetadata) Resolve(event *event.Event) error {
 	event.Topic = event2.TopicRejectRequest
 	event.Data = &event2.RejectRequestEvent{
 		&event2.RequestEvent{
 			EventType: event2.TopicRejectRequest,
-			Project:   d.Project,
-			Operator:  d.Operator,
+			Project:   m.Project,
+			OwnerID:   m.OwnerID,
+			Operator:  m.Operator,
 			OccurAt:   time.Now(),
 		},
 	}

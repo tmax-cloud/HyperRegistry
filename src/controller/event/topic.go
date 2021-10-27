@@ -389,12 +389,13 @@ type RequestEvent struct {
 	EventType string
 	Project   string
 	Operator  string
+	OwnerID   int
 	OccurAt   time.Time
 }
 
 func (r *RequestEvent) String() string {
-	return fmt.Sprintf("Type-%d, Project-%s Operator-%s OccurAt-%s",
-		r.EventType, r.Project, r.Operator, r.OccurAt.Format("2006-01-02 15:04:05"))
+	return fmt.Sprintf("Type-%s, Project-%s OwnerID-%d Operator-%s OccurAt-%s",
+		r.EventType, r.Project, r.OwnerID, r.Operator, r.OccurAt.Format("2006-01-02 15:04:05"))
 }
 
 type ApproveRequestEvent struct {

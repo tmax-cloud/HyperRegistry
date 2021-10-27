@@ -18,7 +18,6 @@ import (
 	"context"
 	event "github.com/goharbor/harbor/src/controller/event/metadata"
 	"github.com/goharbor/harbor/src/controller/event/operator"
-	"github.com/goharbor/harbor/src/lib/config"
 	"github.com/goharbor/harbor/src/pkg/notification"
 	"github.com/goharbor/harbor/src/pkg/user"
 
@@ -173,14 +172,17 @@ func (c *controller) Approve(ctx context.Context, p *models.Request) error {
 	if err := c.requestMgr.Approve(ctx, p); err != nil {
 		return err
 	}
+	owner, err := c.userMgr.Get(ctx, p.OwnerID)
+	if err != nil {
+		return err
+	}
 
 	e := &event.ApproveRequestEventMetadata{
-		ProjectID: requestID,
-		Project:   request.Name,
-		Operator:  operator.FromContext(ctx),
+		Project:  p.Name,
+		OwnerID:  owner.UserID,
+		Operator: operator.FromContext(ctx),
 	}
 	notification.AddEvent(ctx, e)
-
 	return nil
 }
 
@@ -188,14 +190,17 @@ func (c *controller) Reject(ctx context.Context, p *models.Request) error {
 	if err := c.requestMgr.Reject(ctx, p); err != nil {
 		return err
 	}
+	owner, err := c.userMgr.Get(ctx, p.OwnerID)
+	if err != nil {
+		return err
+	}
 
 	e := &event.RejectRequestEventMetadata{
-		ProjectID: proj.ProjectID,
-		Project:   proj.Name,
-		Operator:  operator.FromContext(ctx),
+		Project:  p.Name,
+		OwnerID:  owner.UserID,
+		Operator: operator.FromContext(ctx),
 	}
 	notification.AddEvent(ctx, e)
-
 	return nil
 }
 

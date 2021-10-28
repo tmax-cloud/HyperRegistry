@@ -33,6 +33,7 @@ import {RequestTypes} from "../../../shared/entities/shared.const";
 })
 export class RequestsComponent implements OnInit, OnDestroy {
     requestTypes = RequestTypes;
+
     quotaObj: QuotaHardInterface;
     @ViewChild(CreateRequestComponent)
     creationRequest: CreateRequestComponent;
@@ -40,6 +41,7 @@ export class RequestsComponent implements OnInit, OnDestroy {
     @ViewChild(ListRequestComponent)
     listRequest: ListRequestComponent;
 
+    currentFilteredType: number = 0; // all requests
     requestName: string = "";
 
     loading: boolean = true;
@@ -55,7 +57,20 @@ export class RequestsComponent implements OnInit, OnDestroy {
         private msgHandler: MessageHandlerService,
     ) { }
 
+    get selecteType(): string {
+        return this.currentFilteredType + "";
+    }
+    set selecteType(_request: string) {
+        this.currentFilteredType = +_request;
+        if (window.sessionStorage) {
+            window.sessionStorage['requestTypeValue'] = +_request;
+        }
+    }
+
     ngOnInit(): void {
+        if (window.sessionStorage && window.sessionStorage['requestTypeValue']) {
+            this.currentFilteredType = +window.sessionStorage['requestTypeValue'];
+        }
         if (this.isSystemAdmin) {
             this.getConfigration();
         }
@@ -69,8 +84,12 @@ export class RequestsComponent implements OnInit, OnDestroy {
                     this.listRequest.searchKeyword = projectName;
                     this.listRequest.selectedRow = [];
                     this.loading = true;
+                    let passInFilteredType: number = undefined;
+                    if (this.listRequest.filteredType > 0) {
+                        passInFilteredType = this.listRequest.filteredType - 1;
+                    }
                     return this.reqService.listRequests( this.listRequest.searchKeyword,
-                        this.listRequest.currentPage, this.listRequest.pageSize, getSortingString(this.listRequest.state))
+                        passInFilteredType, this.listRequest.currentPage, this.listRequest.pageSize, getSortingString(this.listRequest.state))
                         .pipe(finalize(() => {
                             this.loading = false;
                         }));
@@ -125,4 +144,7 @@ export class RequestsComponent implements OnInit, OnDestroy {
         this.listRequest.refresh();
     }
 
+    doFilterRequests(): void {
+        this.listRequest.doFilterRequest(+this.selecteType);
+    }
 }

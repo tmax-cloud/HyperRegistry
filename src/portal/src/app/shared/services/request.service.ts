@@ -43,6 +43,7 @@ export abstract class RequestService {
      */
     abstract listRequests(
         name: string,
+        isApproved?: number,
         page?: number,
         pageSize?: number,
         sort?: string
@@ -77,7 +78,7 @@ export class RequestDefaultService extends RequestService {
             .pipe(catchError(error => observableThrowError(error)));
     }
 
-    public listRequests(name: string,
+    public listRequests(name: string, isApproved?: number,
                         page?: number, pageSize?: number, sort?: string): Observable<HttpResponse<Request[]>> {
         let params = new HttpParams();
         if (page && pageSize) {
@@ -85,6 +86,9 @@ export class RequestDefaultService extends RequestService {
         }
         if (name && name.trim() !== "") {
             params = params.set('name', name);
+        }
+        if (isApproved !== undefined) {
+            params = params.set('approved', '' + isApproved);
         }
         if (sort) {
             params = params.set('sort', sort);

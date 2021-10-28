@@ -138,7 +138,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
 
   doFilterProjects(): void {
-    this.listProject.doFilterProject(+this.selecteType);
+      this.listProject.doFilterProject(+this.selecteType);
   }
 
   refresh(): void {

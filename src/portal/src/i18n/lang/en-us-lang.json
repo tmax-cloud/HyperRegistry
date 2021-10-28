@@ -1746,15 +1746,20 @@
     "PROXY_CACHE_ENDPOINT": "Proxy Cache Endpoint",
     "NO_PROJECT": "We couldn't find any projects",
     "OWNER_NAME": "Owner",
-    "IS_APPROVED": "Is Approved?",
-    "NOT_YET": "-",
+    "IS_APPROVED": "Approved?",
+    "UNDETERMINED": "-",
     "APPROVE": "Approve",
     "APPROVED": "Approved",
-    "DENY": "Deny",
-    "DENIED": "Denied",
+    "REJECT": "Reject",
+    "REJECTED": "Rejected",
     "APPROVE_TITLE": "Confirm approve request",
     "APPROVE_SUMMARY": "Do you want to approve request {{param}}?",
-    "DENY_TITLE": "Confirm deny request",
-    "DENY_SUMMARY": "Do you want to deny request {{param}}?"
+    "REJECT_TITLE": "Confirm reject request",
+    "REJECT_SUMMARY": "Do you want to reject request {{param}}?",
+    "NOT_YET": "undetermined",
+    "YES": "yes",
+    "NO": "no",
+    "APPROVED_REQUESTS": "Approved requests",
+    "REJECTED_REQUESTS": "Rejected requests"
   }
 }

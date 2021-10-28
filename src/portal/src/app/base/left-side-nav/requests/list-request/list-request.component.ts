@@ -39,6 +39,7 @@ import {ConfirmationMessage} from "../../../global-confirmation-dialog/confirmat
 export class ListRequestComponent implements OnDestroy {
     loading = true;
     requests: Request[] = [];
+    filteredType = 0; // All requests;
     searchKeyword = "";
     selectedRow: Request[] = [];
 
@@ -75,7 +76,6 @@ export class ListRequestComponent implements OnDestroy {
                 this.onRejectRequests(message.data);
             }
         });
-
     }
 
     actionSubscription: Subscription;
@@ -156,7 +156,11 @@ export class ListRequestComponent implements OnDestroy {
 
         this.loading = true;
 
-        this.reqService.listRequests(this.searchKeyword, pageNumber, this.pageSize, getSortingString(state))
+        let passInFilteredType: number = undefined;
+        if (this.filteredType > 0) {
+            passInFilteredType = this.filteredType - 1;
+        }
+        this.reqService.listRequests(this.searchKeyword, passInFilteredType, pageNumber, this.pageSize, getSortingString(state))
             .pipe(finalize(() => {
                 this.loading = false;
             }))
@@ -391,8 +395,9 @@ export class ListRequestComponent implements OnDestroy {
         this.reload();
     }
 
-    doFilterRequest(): void {
+    doFilterRequest(filter: number): void {
         this.currentPage = 1;
+        this.filteredType = filter;
         this.reload();
     }
 

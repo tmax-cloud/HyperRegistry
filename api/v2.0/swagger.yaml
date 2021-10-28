@@ -16,8 +16,8 @@ securityDefinitions:
   basic:
     type: basic
 security:
-  - basic: []
-  - {}
+  - basic: [ ]
+  - { }
 paths:
   /health:
     get:
@@ -1381,7 +1381,7 @@ paths:
           in: path
           description: The type of addition.
           type: string
-          enum: [build_history, values.yaml, readme.md, dependencies]
+          enum: [ build_history, values.yaml, readme.md, dependencies ]
           required: true
       responses:
         '200':
@@ -5051,7 +5051,7 @@ paths:
     put:
       summary: Update a registered user to change to be an administrator of Harbor.
       tags:
-       - user
+        - user
       operationId: setUserSysAdmin
       parameters:
         - $ref: '#/parameters/requestId'
@@ -5780,6 +5780,11 @@ definitions:
         type: integer
         format: int32
         description: The owner id of the request.
+      storage_quota:
+        type: integer
+        format: int64
+        description: The storage quota of the project.
+        x-nullable: true
       is_approved:
         type: integer
         format: int32
@@ -7638,7 +7643,7 @@ definitions:
 
   QuotaRefObject:
     type: object
-    additionalProperties: {}
+    additionalProperties: { }
 
   Quota:
     type: object

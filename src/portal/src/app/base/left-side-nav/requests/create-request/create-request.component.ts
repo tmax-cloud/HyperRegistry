@@ -137,24 +137,24 @@ export class CreateRequestComponent implements OnInit, AfterViewInit, OnChanges,
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes && changes["quotaObj"] && changes["quotaObj"].currentValue) {
-            this.storageLimit = GetIntegerAndUnit(this.quotaObj.storage_per_project, clone(QuotaUnits), 0, clone(QuotaUnits)).partNumberHard;
+            this.storageLimit = GetIntegerAndUnit(this.quotaObj.storage_per_project, clone(QuotaUnits),
+                0, clone(QuotaUnits)).partNumberHard;
             this.storageLimitUnit = this.storageLimit === QuotaUnlimited ? QuotaUnits[3].UNIT
-                : GetIntegerAndUnit(this.quotaObj.storage_per_project, clone(QuotaUnits), 0, clone(QuotaUnits)).partCharacterHard;
+                : GetIntegerAndUnit(this.quotaObj.storage_per_project, clone(QuotaUnits),
+                    0, clone(QuotaUnits)).partCharacterHard;
 
             this.storageDefaultLimit = this.storageLimit;
             this.storageDefaultLimitUnit = this.storageLimitUnit;
-            if (this.isSystemAdmin) {
-                this.currentForm.form.controls['create_project_storage_limit'].setValidators(
-                    [
-                        Validators.required,
-                        Validators.pattern('(^-1$)|(^([1-9]+)([0-9]+)*$)'),
-                        validateLimit(this.currentForm.form.controls['create_project_storage_limit_unit'])
-                    ]);
-            }
+            this.currentForm.form.controls['create_request_storage_limit'].setValidators(
+                [
+                    Validators.required,
+                    Validators.pattern('(^-1$)|(^([1-9]+)([0-9]+)*$)'),
+                    validateLimit(this.currentForm.form.controls['create_request_storage_limit_unit'])
+                ]);
             this.currentForm.form.valueChanges
                 .pipe(distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)))
                 .subscribe((data) => {
-                    ['create_project_storage_limit', 'create_project_storage_limit_unit'].forEach(fieldName => {
+                    ['create_request_storage_limit', 'create_request_storage_limit_unit'].forEach(fieldName => {
                         if (this.currentForm.form.get(fieldName) && this.currentForm.form.get(fieldName).value !== null) {
                             this.currentForm.form.get(fieldName).updateValueAndValidity();
                         }
@@ -179,7 +179,8 @@ export class CreateRequestComponent implements OnInit, AfterViewInit, OnChanges,
         this.requestService
             .createRequest({
                 request: {
-                    name: this.request.name
+                    name: this.request.name,
+                    storage_limit: +storageByte,
                 }
             })
             .subscribe(

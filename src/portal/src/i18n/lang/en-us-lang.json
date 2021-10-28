@@ -1758,6 +1758,8 @@
     "REJECT_SUMMARY": "Do you want to reject request {{param}}?",
     "NOT_YET": "undetermined",
     "YES": "yes",
-    "NO": "no"
+    "NO": "no",
+    "APPROVED_REQUESTS": "Approved requests",
+    "REJECTED_REQUESTS": "Rejected requests"
   }
 }

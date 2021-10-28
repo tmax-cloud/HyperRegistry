@@ -5351,6 +5351,17 @@ paths:
           type: string
           required: false
           description: The request name.
+        - name: approved
+          in: query
+          description: The request has approved or not.
+          required: false
+          type: boolean
+          format: int32
+        - name: owner
+          in: query
+          description: The name of request owner.
+          required: false
+          type: string
       responses:
         '200':
           description: Return all matched requests.

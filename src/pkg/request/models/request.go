@@ -48,6 +48,7 @@ type Request struct {
 	Deleted      bool      `orm:"column(deleted)" json:"deleted"`
 	OwnerName    string    `orm:"column(owner_name)" json:"owner_name"`
 	IsApproved   int       `orm:"column(is_approved)" json:"is_approved"`
+	StorageQuota int64     `orm:"column(storage_quota)" json:"storage_quota"`
 }
 
 // NamesQuery ...

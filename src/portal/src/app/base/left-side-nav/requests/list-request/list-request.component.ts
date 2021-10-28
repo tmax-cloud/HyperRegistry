@@ -22,12 +22,17 @@ import {SearchTriggerService} from "../../../../shared/components/global-search/
 import {AppConfigService} from "../../../../services/app-config.service";
 import {Request} from "../request";
 import {catchError, finalize, map} from "rxjs/operators";
-import {calculatePage, getSortingString} from "../../../../shared/units/utils";
+import {calculatePage, clone, GetIntegerAndUnit, getSortingString} from "../../../../shared/units/utils";
 import {OperationService} from "../../../../shared/components/operation/operation.service";
 import {operateChanges, OperateInfo, OperationState} from "../../../../shared/components/operation/operate";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ClrDatagridStateInterface} from '@clr/angular';
-import {ConfirmationButtons, ConfirmationState, ConfirmationTargets} from "../../../../shared/entities/shared.const";
+import {
+    ConfirmationButtons,
+    ConfirmationState,
+    ConfirmationTargets,
+    QuotaUnits
+} from "../../../../shared/entities/shared.const";
 import {ConfirmationDialogService} from "../../../global-confirmation-dialog/confirmation-dialog.service";
 import {errorHandler} from "../../../../shared/units/shared.utils";
 import {ConfirmationMessage} from "../../../global-confirmation-dialog/confirmation-message";
@@ -126,6 +131,11 @@ export class ListRequestComponent implements OnDestroy {
             return false;
         }
         return this.selectedRow.every((r: Request) => r.is_approved !== 1 && r.is_approved !== 2);
+    }
+
+    getIntegerAndUnit(valueHard, valueUsed) {
+        return GetIntegerAndUnit(valueHard
+            , clone(QuotaUnits), valueUsed, clone(QuotaUnits));
     }
 
     ngOnDestroy(): void {
@@ -325,7 +335,7 @@ export class ListRequestComponent implements OnDestroy {
     handleApproveOperation(request: Request) {
         // init operation info
         let operMessage = new OperateInfo();
-        operMessage.name = 'OPERATION.APPROVE_PROJECT';
+        operMessage.name = 'OPERATION.APPROVE_REQUEST';
         operMessage.data.id = request.request_id;
         operMessage.state = OperationState.progressing;
         operMessage.data.name = request.name;

@@ -1760,6 +1760,8 @@
     "YES": "yes",
     "NO": "no",
     "APPROVED_REQUESTS": "Approved requests",
-    "REJECTED_REQUESTS": "Rejected requests"
+    "REJECTED_REQUESTS": "Rejected requests",
+    "QUOTA": "Quota",
+    "CLAIM": "Claim"
   }
 }

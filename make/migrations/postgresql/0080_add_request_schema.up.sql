@@ -14,3 +14,5 @@ ALTER TABLE request
     ADD COLUMN owner_name varchar(255) Default '-';
 ALTER TABLE request
     ADD COLUMN is_approved int NOT NULL Default 0;
+ALTER TABLE request
+    ADD COLUMN storage_quota bigint NOT NULL Default 0;

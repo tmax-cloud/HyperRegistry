@@ -76,7 +76,7 @@ func (a *requestsAPI) CreateRequest(ctx context.Context, params operation.Create
 	}
 
 	req := params.Request
-	// validate the RegistryID and StorageLimit in the body of the request
+	// validate StorageQuota in the body of the request
 	if err := a.validateRequestReq(ctx, req); err != nil {
 		return a.SendError(ctx, err)
 	}
@@ -92,9 +92,10 @@ func (a *requestsAPI) CreateRequest(ctx context.Context, params operation.Create
 	ownerID = user.UserID
 
 	p := &request.Request{
-		Name:      req.Name,
-		OwnerID:   ownerID,
-		OwnerName: ownerName,
+		Name:         req.Name,
+		OwnerID:      ownerID,
+		OwnerName:    ownerName,
+		StorageQuota: *req.StorageQuota,
 	}
 
 	requestID, err := a.requestCtl.Create(ctx, p)
@@ -244,8 +245,13 @@ func (a *requestsAPI) ApproveRequest(ctx context.Context, params operation.Appro
 		return a.SendError(ctx, err)
 	}
 
-	// populate storage limit
-	if config.QuotaPerProjectEnable(ctx) {
+	if req.StorageQuota != 0 {
+		referenceID := quota.ReferenceID(projectID)
+		hardLimits := types.ResourceList{types.ResourceStorage: req.StorageQuota}
+		if _, err := a.quotaCtl.Create(ctx, quota.ProjectReference, referenceID, hardLimits); err != nil {
+			return a.SendError(ctx, fmt.Errorf("failed to create quota for project: %v", err))
+		}
+	} else if config.QuotaPerProjectEnable(ctx) {
 		// the security context is not sys admin, set the StorageLimit the global StoragePerProject
 		setting, err := config.QuotaSetting(ctx)
 		if err != nil {
@@ -301,13 +307,12 @@ func (a *requestsAPI) isSysAdmin(ctx context.Context, action rbac.Action) bool {
 }
 
 func (a *requestsAPI) validateRequestReq(ctx context.Context, req *models.Request) error {
-	// TODO:
-	//if req.StorageLimit != nil {
-	//	hardLimits := types.ResourceList{types.ResourceStorage: *req.StorageLimit}
-	//	if err := quota.Validate(ctx, quota.ProjectReference, hardLimits); err != nil {
-	//		return errors.BadRequestError(err)
-	//	}
-	//}
+	if req.StorageQuota != nil {
+		hardLimits := types.ResourceList{types.ResourceStorage: *req.StorageQuota}
+		if err := quota.Validate(ctx, quota.ProjectReference, hardLimits); err != nil {
+			return errors.BadRequestError(err)
+		}
+	}
 
 	return nil
 }

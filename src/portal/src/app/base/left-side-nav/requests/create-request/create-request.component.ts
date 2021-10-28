@@ -180,7 +180,7 @@ export class CreateRequestComponent implements OnInit, AfterViewInit, OnChanges,
             .createRequest({
                 request: {
                     name: this.request.name,
-                    storage_limit: +storageByte,
+                    storage_quota: +storageByte,
                 }
             })
             .subscribe(

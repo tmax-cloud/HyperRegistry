@@ -35,6 +35,7 @@ func (r *Request) ToSwagger() *models.Request {
 		RequestID:    int32(r.RequestID),
 		UpdateTime:   strfmt.DateTime(r.UpdateTime),
 		IsApproved:   int32(r.IsApproved),
+		StorageQuota: &r.StorageQuota,
 	}
 }
 

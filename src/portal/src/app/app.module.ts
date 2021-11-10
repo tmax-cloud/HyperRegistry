@@ -30,6 +30,8 @@ import {
 import {
     ProjectDefaultService,
     ProjectService,
+    RequestDefaultService,
+    RequestService,
     UserPermissionDefaultService,
     UserPermissionService
 } from "./shared/services";
@@ -83,6 +85,7 @@ class MyMissingTranslationHandler implements MissingTranslationHandler {
         },
         { provide: HTTP_INTERCEPTORS, useClass: InterceptHttpService, multi: true },
         { provide: ProjectService, useClass: ProjectDefaultService },
+        { provide: RequestService, useClass: RequestDefaultService },
         { provide: ErrorHandler, useClass: MessageHandlerService },
         { provide: UserPermissionService, useClass: UserPermissionDefaultService },
     ],

@@ -1,4 +1,4 @@
-//// Copyright Project Harbor Authors
+//// Copyright Request Harbor Authors
 ////
 //// Licensed under the Apache License, Version 2.0 (the "License");
 //// you may not use this file except in compliance with the License.
@@ -14,141 +14,127 @@
 //
 package request
 
-//
-//import (
-//	"context"
-//	"fmt"
-//	"testing"
-//
-//	"github.com/goharbor/harbor/src/lib/errors"
-//	"github.com/goharbor/harbor/src/lib/orm"
-//	"github.com/goharbor/harbor/src/lib/q"
-//	models2 "github.com/goharbor/harbor/src/pkg/allowlist/models"
-//	"github.com/goharbor/harbor/src/pkg/project/models"
-//	usermodels "github.com/goharbor/harbor/src/pkg/user/models"
-//	ormtesting "github.com/goharbor/harbor/src/testing/lib/orm"
-//	"github.com/goharbor/harbor/src/testing/mock"
-//	allowlisttesting "github.com/goharbor/harbor/src/testing/pkg/allowlist"
-//	"github.com/goharbor/harbor/src/testing/pkg/project"
-//	"github.com/goharbor/harbor/src/testing/pkg/project/metadata"
-//	"github.com/goharbor/harbor/src/testing/pkg/user"
-//	"github.com/stretchr/testify/suite"
-//)
-//
-//type ControllerTestSuite struct {
-//	suite.Suite
-//}
-//
-//func (suite *ControllerTestSuite) TestCreate() {
-//	ctx := orm.NewContext(context.TODO(), &ormtesting.FakeOrmer{})
-//	mgr := &project.Manager{}
-//
-//	allowlistMgr := &allowlisttesting.Manager{}
-//	allowlistMgr.On("CreateEmpty", mock.Anything, mock.Anything).Return(nil)
-//
-//	metadataMgr := &metadata.Manager{}
-//
-//	c := controller{projectMgr: mgr, allowlistMgr: allowlistMgr, metaMgr: metadataMgr}
-//
-//	{
-//		metadataMgr.On("Add", mock.Anything, mock.Anything, mock.Anything).Return(nil).Once()
-//		mgr.On("Create", mock.Anything, mock.Anything).Return(int64(2), nil).Once()
-//		projectID, err := c.Create(ctx, &models.Project{OwnerID: 1, Metadata: map[string]string{"public": "true"}})
-//		suite.Nil(err)
-//		suite.Equal(int64(2), projectID)
-//	}
-//
-//	{
-//		metadataMgr.On("Add", mock.Anything, mock.Anything, mock.Anything).Return(fmt.Errorf("oops")).Once()
-//		mgr.On("Create", mock.Anything, mock.Anything).Return(int64(2), nil).Once()
-//		projectID, err := c.Create(ctx, &models.Project{OwnerID: 1, Metadata: map[string]string{"public": "true"}})
-//		suite.Error(err)
-//		suite.Equal(int64(0), projectID)
-//	}
-//}
-//
-//func (suite *ControllerTestSuite) TestGetByName() {
-//	ctx := context.TODO()
-//
-//	mgr := &project.Manager{}
-//	mgr.On("Get", ctx, "library").Return(&models.Project{ProjectID: 1, Name: "library"}, nil)
-//	mgr.On("Get", ctx, "test").Return(nil, errors.NotFoundError(nil))
-//	mgr.On("Get", ctx, "oops").Return(nil, fmt.Errorf("oops"))
-//
-//	allowlistMgr := &allowlisttesting.Manager{}
-//
-//	metadataMgr := &metadata.Manager{}
-//	metadataMgr.On("Get", ctx, mock.Anything).Return(map[string]string{"public": "true"}, nil)
-//
-//	c := controller{projectMgr: mgr, allowlistMgr: allowlistMgr, metaMgr: metadataMgr}
-//
-//	{
-//		p, err := c.GetByName(ctx, "library")
-//		suite.Nil(err)
-//		suite.Equal("library", p.Name)
-//		suite.Equal(int64(1), p.ProjectID)
-//	}
-//
-//	{
-//		p, err := c.GetByName(ctx, "test")
-//		suite.Error(err)
-//		suite.True(errors.IsNotFoundErr(err))
-//		suite.Nil(p)
-//	}
-//
-//	{
-//		p, err := c.GetByName(ctx, "oops")
-//		suite.Error(err)
-//		suite.False(errors.IsNotFoundErr(err))
-//		suite.Nil(p)
-//	}
-//
-//	{
-//		allowlistMgr.On("Get", mock.Anything, mock.Anything).Return(&models2.CVEAllowlist{ProjectID: 1}, nil)
-//		p, err := c.GetByName(ctx, "library", WithCVEAllowlist())
-//		suite.Nil(err)
-//		suite.Equal("library", p.Name)
-//		suite.Equal(p.ProjectID, p.CVEAllowlist.ProjectID)
-//	}
-//}
-//
-//func (suite *ControllerTestSuite) TestWithOwner() {
-//	ctx := context.TODO()
-//
-//	mgr := &project.Manager{}
-//	mgr.On("Get", ctx, int64(1)).Return(&models.Project{ProjectID: 1, OwnerID: 1, Name: "library"}, nil)
-//	mgr.On("Get", ctx, "library").Return(&models.Project{ProjectID: 1, OwnerID: 1, Name: "library"}, nil)
-//	mgr.On("List", ctx, mock.Anything).Return([]*models.Project{
-//		{ProjectID: 1, OwnerID: 1, Name: "library"},
-//	}, nil)
-//
-//	userMgr := &user.Manager{}
-//	userMgr.On("List", ctx, mock.Anything).Return(usermodels.Users{
-//		&usermodels.User{UserID: 1, Username: "admin"},
-//	}, nil)
-//
-//	c := controller{projectMgr: mgr, userMgr: userMgr}
-//
-//	{
-//		project, err := c.Get(ctx, int64(1), Metadata(false), WithOwner())
-//		suite.Nil(err)
-//		suite.Equal("admin", project.OwnerName)
-//	}
-//
-//	{
-//		project, err := c.GetByName(ctx, "library", Metadata(false), WithOwner())
-//		suite.Nil(err)
-//		suite.Equal("admin", project.OwnerName)
-//	}
-//
-//	{
-//		projects, err := c.List(ctx, q.New(q.KeyWords{"project_id__in": []int64{1}}), Metadata(false), WithOwner())
-//		suite.Nil(err)
-//		suite.Len(projects, 1)
-//		suite.Equal("admin", projects[0].OwnerName)
-//	}
-//}
-//
-//func TestControllerTestSuite(t *testing.T) {
-//	suite.Run(t, &ControllerTestSuite{})
-//}
+import (
+	"context"
+	"fmt"
+	"testing"
+
+	"github.com/goharbor/harbor/src/lib/errors"
+	"github.com/goharbor/harbor/src/lib/orm"
+	"github.com/goharbor/harbor/src/lib/q"
+	"github.com/goharbor/harbor/src/pkg/request/models"
+	usermodels "github.com/goharbor/harbor/src/pkg/user/models"
+	ormtesting "github.com/goharbor/harbor/src/testing/lib/orm"
+	"github.com/goharbor/harbor/src/testing/mock"
+	"github.com/goharbor/harbor/src/testing/pkg/request"
+	"github.com/goharbor/harbor/src/testing/pkg/user"
+	"github.com/stretchr/testify/suite"
+)
+
+type ControllerTestSuite struct {
+	suite.Suite
+}
+
+func (suite *ControllerTestSuite) TestCreate() {
+	ctx := orm.NewContext(context.TODO(), &ormtesting.FakeOrmer{})
+	mgr := &request.Manager{}
+	usrMgr := &user.Manager{}
+
+	c := controller{requestMgr: mgr, userMgr: usrMgr}
+
+	{
+		mgr.On("Create", mock.Anything, mock.Anything).Return(int64(1), nil).Once()
+		requestID, err := c.Create(ctx, &models.Request{OwnerID: 1})
+		suite.Nil(err)
+		suite.Equal(int64(1), requestID)
+	}
+
+	{
+		mgr.On("Create", mock.Anything, mock.Anything).Return(int64(1), nil).Once()
+		requestID, err := c.Create(ctx, &models.Request{OwnerID: 1, StorageQuota: 0})
+		suite.Nil(err)
+		suite.Equal(int64(1), requestID)
+	}
+
+	{
+		mgr.On("Create", mock.Anything, mock.Anything).Return(int64(1), nil).Once()
+		requestID, err := c.Create(ctx, &models.Request{OwnerID: 1, StorageQuota: 1024 * 1024})
+		suite.Nil(err)
+		suite.Equal(int64(1), requestID)
+	}
+}
+
+func (suite *ControllerTestSuite) TestGetByName() {
+	ctx := context.TODO()
+
+	mgr := &request.Manager{}
+	mgr.On("Get", ctx, "existing").Return(&models.Request{RequestID: 1, Name: "existing"}, nil)
+	mgr.On("Get", ctx, "not-existing").Return(nil, errors.NotFoundError(nil))
+	mgr.On("Get", ctx, "oops").Return(nil, fmt.Errorf("oops"))
+
+	c := controller{requestMgr: mgr}
+
+	{
+		p, err := c.GetByName(ctx, "existing")
+		suite.Nil(err)
+		suite.Equal("existing", p.Name)
+		suite.Equal(int64(1), p.RequestID)
+	}
+
+	{
+		p, err := c.GetByName(ctx, "not-existing")
+		suite.Error(err)
+		suite.True(errors.IsNotFoundErr(err))
+		suite.Nil(p)
+	}
+
+	{
+		p, err := c.GetByName(ctx, "oops")
+		suite.Error(err)
+		suite.False(errors.IsNotFoundErr(err))
+		suite.Nil(p)
+	}
+}
+
+func (suite *ControllerTestSuite) TestWithOwner() {
+	ctx := context.TODO()
+
+	mgr := &request.Manager{}
+	mgr.On("Get", ctx, int64(1)).Return(&models.Request{RequestID: 1, OwnerID: 2, Name: "tmaxcloud"}, nil)
+	mgr.On("Get", ctx, "tmaxcloud").Return(&models.Request{RequestID: 1, OwnerID: 2, Name: "tmaxcloud"}, nil)
+	mgr.On("List", ctx, mock.Anything).Return([]*models.Request{
+		{RequestID: 1, OwnerID: 2, Name: "tmaxcloud"},
+	}, nil)
+
+	userMgr := &user.Manager{}
+	userMgr.On("List", ctx, mock.Anything).Return(usermodels.Users{
+		&usermodels.User{UserID: 1, Username: "admin"},
+		&usermodels.User{UserID: 2, Username: "dev"},
+		&usermodels.User{UserID: 3, Username: "guest"},
+	}, nil)
+
+	c := controller{requestMgr: mgr, userMgr: userMgr}
+
+	{
+		req, err := c.Get(ctx, int64(1), WithOwner())
+		suite.Nil(err)
+		suite.Equal("dev", req.OwnerName)
+	}
+
+	{
+		req, err := c.GetByName(ctx, "tmaxcloud", WithOwner())
+		suite.Nil(err)
+		suite.Equal("dev", req.OwnerName)
+	}
+
+	{
+		req, err := c.List(ctx, q.New(q.KeyWords{"request_id__in": []int64{1}}), WithOwner())
+		suite.Nil(err)
+		suite.Len(req, 1)
+		suite.Equal("dev", req[0].OwnerName)
+	}
+}
+
+func TestControllerTestSuite(t *testing.T) {
+	suite.Run(t, &ControllerTestSuite{})
+}

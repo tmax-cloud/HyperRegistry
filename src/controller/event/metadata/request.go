@@ -32,7 +32,7 @@ type ApproveRequestEventMetadata struct {
 func (m *ApproveRequestEventMetadata) Resolve(event *event.Event) error {
 	event.Topic = event2.TopicApproveRequest
 	event.Data = &event2.ApproveRequestEvent{
-		&event2.RequestEvent{
+		RequestEvent: &event2.RequestEvent{
 			EventType: event2.TopicApproveRequest,
 			Project:   m.Project,
 			OwnerID:   m.OwnerID,
@@ -55,7 +55,7 @@ type RejectRequestEventMetadata struct {
 func (m *RejectRequestEventMetadata) Resolve(event *event.Event) error {
 	event.Topic = event2.TopicRejectRequest
 	event.Data = &event2.RejectRequestEvent{
-		&event2.RequestEvent{
+		RequestEvent: &event2.RequestEvent{
 			EventType: event2.TopicRejectRequest,
 			Project:   m.Project,
 			OwnerID:   m.OwnerID,

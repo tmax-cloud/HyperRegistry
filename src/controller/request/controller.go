@@ -21,8 +21,6 @@ import (
 	"github.com/goharbor/harbor/src/pkg/notification"
 	"github.com/goharbor/harbor/src/pkg/user"
 
-	//commonmodels "github.com/goharbor/harbor/src/common/models"
-	//event "github.com/goharbor/harbor/src/controller/event/metadata"
 	_ "github.com/goharbor/harbor/src/controller/event/operator"
 	"github.com/goharbor/harbor/src/lib/errors"
 	"github.com/goharbor/harbor/src/lib/log"

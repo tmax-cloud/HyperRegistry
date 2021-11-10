@@ -118,9 +118,6 @@ func (a *requestsAPI) DeleteRequest(ctx context.Context, params operation.Delete
 
 	}
 	requestNameOrID := parseRequestNameOrID(params.RequestNameOrID, params.XIsResourceName)
-	//if err := a.RequireProjectAccess(ctx, requestNameOrID, rbac.ActionDelete); err != nil {
-	//	return a.SendError(ctx, err)
-	//}
 
 	p, result, err := a.deletable(ctx, requestNameOrID)
 	if err != nil {

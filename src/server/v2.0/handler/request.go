@@ -329,13 +329,6 @@ func (a *requestsAPI) deletable(ctx context.Context, requestNameOrID interface{}
 	}
 
 	result := &models.ProjectDeletable{Deletable: true}
-	//if p.RepoCount > 0 {
-	//	result.Deletable = false
-	//	result.Message = "the project contains repositories, can not be deleted"
-	//} else if p.ChartCount > 0 {
-	//	result.Deletable = false
-	//	result.Message = "the project contains helm charts, can not be deleted"
-	//}
 
 	return r, result, nil
 }

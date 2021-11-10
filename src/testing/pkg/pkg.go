@@ -53,3 +53,5 @@ package pkg
 //go:generate mockery --case snake --dir ../../pkg/label/dao --name DAO --output ./label/dao --outpkg dao
 //go:generate mockery --case snake --dir ../../pkg/joblog --name Manager --output ./joblog --outpkg joblog
 //go:generate mockery --case snake --dir ../../pkg/joblog/dao --name DAO --output ./joblog/dao --outpkg dao
+//go:generate mockery --case snake --dir ../../pkg/request --name Manager --output ./request --outpkg request
+//go:generate mockery --case snake --dir ../../pkg/request/dao --name DAO --output ./request/dao --outpkg dao

@@ -73,19 +73,6 @@ func (suite *DaoTestSuite) TestCreate() {
 		suite.Nil(err)
 		suite.dao.Delete(orm.Context(), requestID)
 	}
-
-	{
-		// request name duplicated
-		request := &models.Request{
-			Name:    "library",
-			OwnerID: 1,
-		}
-
-		requestID, err := suite.dao.Create(orm.Context(), request)
-		suite.Error(err)
-		suite.True(errors.IsConflictErr(err))
-		suite.Equal(int64(0), requestID)
-	}
 }
 
 func (suite *DaoTestSuite) TestCount() {

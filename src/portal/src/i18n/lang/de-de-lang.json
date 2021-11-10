@@ -597,6 +597,7 @@
         "PLACEHOLDER": "Es konnten keine Replikations-Regeln gefunden werden!",
         "JOB_PLACEHOLDER": "Es konnten keine Replikations-Jobs gefunden werden!",
         "NO_ENDPOINT_INFO": "Bitte zuerst einen Endpunkt hinzufügen",
+        "NO_LABEL_INFO": "Please add a label first",
         "NO_PROJECT_INFO": "Dieses Projekt existiert nicht",
         "SOURCE_RESOURCE_FILTER": "Quellen-Filter",
         "SCHEDULED": "Geplant",
@@ -1066,8 +1067,6 @@
             "HIGH": "Hoch",
             "MEDIUM": "Mittel",
             "LOW": "Niedrig",
-            "NEGLIGIBLE": "Geringfügig",
-            "UNKNOWN": "Unbekannt",
             "NONE": "Keine"
         },
         "SINGULAR": "Schwachstelle",
@@ -1702,6 +1701,9 @@
         "FINAL_SYSTEM_NAME_TIP": "Der zusammengesetzte systemweite Robot-Account-Name besteht aus dem Prefix und dem Inhalt des Eingabefeldes.",
         "PUSH_AND_PULL": "Push",
         "PUSH_PERMISSION_TOOLTIP": "Push permission can not work alone, it must work with pull permission",
-        "STOP": "Stop"
+        "STOP": "Stop",
+        "LIST": "List",
+        "REPOSITORY": "Repository",
+        "HELM_LABEL": "Helm Chart label"
     }
 }

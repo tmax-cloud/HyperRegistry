@@ -597,6 +597,7 @@
         "PLACEHOLDER": "Não foi possível encontrar nenhuma regra de replicação!",
         "JOB_PLACEHOLDER": "Não foi possível encontrar nenhuma tarefa de replicação!",
         "NO_ENDPOINT_INFO": "Por favor adicione antes um endpoint",
+        "NO_LABEL_INFO": "Please add a label first",
         "NO_PROJECT_INFO": "Esse projeto não existe",
         "SOURCE_RESOURCE_FILTER": "Filtro de recursos da origem",
         "SCHEDULED": "Agendado",
@@ -1062,8 +1063,6 @@
             "HIGH": "Alta",
             "MEDIUM": "Média",
             "LOW": "Baixa",
-            "NEGLIGIBLE": "Negligenciável",
-            "UNKNOWN": "Desconhecida",
             "NONE": "Nenhum"
         },
         "SINGULAR": "vulnerabilidade",
@@ -1698,7 +1697,9 @@
         "FINAL_SYSTEM_NAME_TIP": "Este valor será concatenado ao prefixo do projeto.",
         "PUSH_AND_PULL": "Push",
         "PUSH_PERMISSION_TOOLTIP": "Permissões de envio (push) presume também a permissão e recebimento (pull).",
-        "STOP": "Stop"
+        "STOP": "Stop",
+        "LIST": "List",
+        "REPOSITORY": "Repository",
+        "HELM_LABEL": "Helm Chart label"
     }
-
 }

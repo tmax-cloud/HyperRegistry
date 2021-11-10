@@ -599,6 +599,7 @@
         "PLACEHOLDER": "未发现任何复制规则!",
         "JOB_PLACEHOLDER": "未发现任何复制任务!",
         "NO_ENDPOINT_INFO": "请先添加一个目标",
+        "NO_LABEL_INFO": "请先添加一个标签",
         "NO_PROJECT_INFO": "此项目不存在",
         "SOURCE_RESOURCE_FILTER": "源资源过滤器",
         "SCHEDULED": "定时",
@@ -910,7 +911,7 @@
             "REPO_TOOLTIP": "用户在此模式下无法对镜像执行任何操作。",
             "WEBHOOK_TOOLTIP": "当执行推送，拉动，删除，扫描镜像或 chart 等特定操作时，启用 webhooks 以在指定端点接收回调",
             "HOURLY_CRON": "每小时运行一次。相当于 0 0 * * * *",
-            "WEEKLY_CRON": "每周一次，周六/周日午夜之间开始。相当于 0 0 * * * *",
+            "WEEKLY_CRON": "每周一次，周六/周日午夜之间开始。相当于 0 0 0 * * 0",
             "DAILY_CRON": "每天午夜运行一次。相当于 0 0 0 * * *"
         },
         "LDAP": {
@@ -1067,9 +1068,7 @@
             "HIGH": "严重",
             "MEDIUM": "中等",
             "LOW": "较低",
-            "NEGLIGIBLE": "可忽略",
-            "UNKNOWN": "未知",
-            "NONE": "无"
+            "NONE": "无评分"
         },
         "SINGULAR": "漏洞",
         "OVERALL_SEVERITY": "漏洞严重度:",
@@ -1700,6 +1699,9 @@
         "FINAL_SYSTEM_NAME_TIP": "系统级机器人的最终名称由前缀和当前输入值组成",
         "PUSH_AND_PULL": "推送",
         "PUSH_PERMISSION_TOOLTIP": "推送权限无法单独工作，请在选择推送权限的时，确保已经勾选了拉取权限",
-        "STOP": "停止"
+        "STOP": "停止",
+        "LIST": "查询",
+        "REPOSITORY": "仓库",
+        "HELM_LABEL": "Helm Chart 标签"
     }
 }

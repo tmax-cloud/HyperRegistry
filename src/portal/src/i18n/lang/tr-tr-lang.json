@@ -597,6 +597,7 @@
         "PLACEHOLDER": "Herhangi bir çoğaltma kuralı bulamadık!",
         "JOB_PLACEHOLDER": "Çoğaltma işi bulamadık!",
         "NO_ENDPOINT_INFO": "Lütfen önce bir uç noktası ekleyin",
+        "NO_LABEL_INFO": "Please add a label first",
         "NO_PROJECT_INFO": "Bu proje mevcut değil",
         "SOURCE_RESOURCE_FILTER": "Kaynak vasıtası filtresi",
         "SCHEDULED": "Belirlenmiş",
@@ -1066,8 +1067,6 @@
             "HIGH": "Yüksek",
             "MEDIUM": "Orta",
             "LOW": "Düşük",
-            "NEGLIGIBLE": "Önemsiz",
-            "UNKNOWN": "Bilinmiyor",
             "NONE": "Hiç"
         },
         "SINGULAR": "güvenlik açığı",
@@ -1702,6 +1701,9 @@
         "FINAL_SYSTEM_NAME_TIP": "The final system robot name consists of the prefix and the current input value",
         "PUSH_AND_PULL": "Push",
         "PUSH_PERMISSION_TOOLTIP": "Push permission can not work alone, it must work with pull permission",
-        "STOP": "Stop"
+        "STOP": "Stop",
+        "LIST": "List",
+        "REPOSITORY": "Repository",
+        "HELM_LABEL": "Helm Chart label"
     }
 }

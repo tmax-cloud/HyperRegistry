@@ -587,6 +587,7 @@
         "PLACEHOLDER": "Nous n'avons trouvé aucune règle de réplication !",
         "JOB_PLACEHOLDER": "Nous n'avons trouvé aucun travail de réplication !",
         "NO_ENDPOINT_INFO": "Please add an endpoint first",
+        "NO_LABEL_INFO": "Please add a label first",
         "NO_PROJECT_INFO": "This project is not exist",
         "SOURCE_RESOURCE_FILTER": "Source resource filter",
         "SCHEDULED": "Scheduled",
@@ -1039,8 +1040,6 @@
             "HIGH": "Haut",
             "MEDIUM": "Moyen",
             "LOW": "Bas",
-            "NEGLIGIBLE": "Négligeable",
-            "UNKNOWN": "Inconnu",
             "NONE": "Aucune"
         },
         "SINGULAR": "vulnérabilitée",
@@ -1670,6 +1669,9 @@
         "FINAL_SYSTEM_NAME_TIP": "The final system robot name consists of the prefix and the current input value",
         "PUSH_AND_PULL": "Push",
         "PUSH_PERMISSION_TOOLTIP": "Push permission can not work alone, it must work with pull permission",
-        "STOP": "Stop"
+        "STOP": "Stop",
+        "LIST": "List",
+        "REPOSITORY": "Repository",
+        "HELM_LABEL": "Helm Chart label"
     }
 }

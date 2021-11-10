@@ -8,7 +8,7 @@
                 <div class="clr-control-container" [class.clr-error]="!isNameValid">
                     <div class="clr-input-wrapper">
                         <input type="text" id="create_request_name" [(ngModel)]="request.name" name="create_request_name" class="clr-input input-width"
-                               required pattern="^[a-z0-9]+(?:[._-][a-z0-9]+)*$" #requesttName autocomplete="off">
+                               required pattern="^[a-z0-9]+(?:[._-][a-z0-9]+)*$" #requestName autocomplete="off">
                         <clr-icon class="clr-validate-icon" shape="exclamation-circle"></clr-icon>
                         <span class="spinner spinner-inline" [hidden]="!checkOnGoing"></span>
                     </div>
@@ -47,7 +47,7 @@
         </form>
     </div>
     <div class="modal-footer">
-        <button id="new-project-cancel" type="button" class="btn btn-outline" (click)="onCancel()">{{'BUTTON.CANCEL' | translate}}</button>
-        <button id="new-project-ok" type="button" class="btn btn-primary" [disabled]="!isValid" (click)="onSubmit()">{{'BUTTON.OK' | translate}}</button>
+        <button id="new-request-cancel" type="button" class="btn btn-outline" (click)="onCancel()">{{'BUTTON.CANCEL' | translate}}</button>
+        <button id="new-request-ok" type="button" class="btn btn-primary" [disabled]="!isValid" (click)="onSubmit()">{{'BUTTON.OK' | translate}}</button>
     </div>
 </clr-modal>

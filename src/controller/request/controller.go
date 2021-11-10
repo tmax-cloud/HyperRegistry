@@ -125,7 +125,7 @@ func (c *controller) Get(ctx context.Context, requestIDOrName interface{}, optio
 		return nil, err
 	}
 
-	if err := c.assembleRequests(ctx, models.Requests{r}); err != nil {
+	if err := c.assembleRequests(ctx, models.Requests{r}, options...); err != nil {
 		return nil, err
 	}
 

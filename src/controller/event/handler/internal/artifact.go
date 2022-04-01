@@ -150,10 +150,10 @@ func (a *Handler) sendMail(ctx context.Context, event *event.RequestEvent) error
 	var subject, message string
 	switch event.EventType {
 	case event2.TopicApproveRequest:
-		subject = fmt.Sprintf("[SuperRegistry] Approved request")
+		subject = fmt.Sprintf("[HyperRegistry] Approved request")
 		message = fmt.Sprintf("Hey %s! The project named %s has been created by request.", owner.Username, event.Project)
 	case event2.TopicRejectRequest:
-		subject = fmt.Sprintf("[SuperRegistry] Rejected request")
+		subject = fmt.Sprintf("[HyperRegistry] Rejected request")
 		message = fmt.Sprintf("Sorry %s. Please contact admin %s.", owner.Username, event.Operator)
 	default:
 		log.Errorf("undefined event type: %s", event.EventType)

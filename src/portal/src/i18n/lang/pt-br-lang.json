@@ -248,7 +248,7 @@
         "STORAGE_QUOTA": "Limite de armazenamento",
         "COUNT_QUOTA_TIP": "Informe um número inteiro entre 1 e 100.000.000. Use -1 para ilimitado.",
         "STORAGE_QUOTA_TIP": "Limite de armazenamento. Apenas números inteiros. Valor máximo de 1024TB. Use -1 para ilimitado.",
-        "QUOTA_UNLIMIT_TIP": "Para  não ter limite, utilize -1.",
+        "QUOTA_UNLIMIT_TIP": "Para  não ter limite, utilize -1. The storage quota setting is a limiting function, not a guarantee of usage.",
         "TYPE": "Tipo",
         "PROXY_CACHE": "Proxy Cache",
         "PROXY_CACHE_TOOLTIP": "Habilite para fazer deste projeto um cache local de outros repositórios remotos (registries). O Harbor pode servir de cache apenas para outros repositórios Harbor, Docker Hub, AWS ECR, Azure ACR, Quay, Google GCR e repositórios compatíveis com o protocolo Docker Registry",

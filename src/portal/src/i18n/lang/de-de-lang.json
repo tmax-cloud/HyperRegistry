@@ -249,7 +249,7 @@
         "STORAGE_QUOTA": "Speicherbeschränkung",
         "COUNT_QUOTA_TIP": "Bitte einen Wert zwischen '1' & '100.000.000' wählen. '-1' für unbegrenzt.",
         "STORAGE_QUOTA_TIP": "Die obere Grenze der Speicherbeschränkung akzeptiert ausschließlich Integer-Werte, begrenzt auf '1024TB'. '-1' für keine Speicherbeschränkung",
-        "QUOTA_UNLIMIT_TIP": "Für eine unbegrenzte Speicherbeschränkung '-1' eingeben.",
+        "QUOTA_UNLIMIT_TIP": "Für eine unbegrenzte Speicherbeschränkung '-1' eingeben. The storage quota setting is a limiting function, not a guarantee of usage.",
         "TYPE": "Typ",
         "PROXY_CACHE": "Proxy Cache",
         "PROXY_CACHE_TOOLTIP": "Die Aktivierung der Funktion erlaubt es dem Projekt, als Cache für eine andere Registry Instanz zu dienen. Harbor unterstützt die Proxy Funktion nur für DockerHub, Docker Registry, Harbor, Aws ECR, Azure ACR, Quay und Google GCR.",

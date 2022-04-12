@@ -243,7 +243,7 @@
         "STORAGE_QUOTA": "Storage quota",
         "COUNT_QUOTA_TIP": "Please enter an integer between '1' & '100,000,000', '-1' for unlimited",
         "STORAGE_QUOTA_TIP": "The upper limit of Storage Quota only takes integer values, capped at '1024TB'.  Enter '-1' for unlimited quota",
-        "QUOTA_UNLIMIT_TIP": "For unlimited quota enter '-1'.",
+        "QUOTA_UNLIMIT_TIP": "For unlimited quota enter '-1'. The storage quota setting is a limiting function, not a guarantee of usage.",
         "TYPE": "Type",
         "PROXY_CACHE": "Proxy Cache",
         "PROXY_CACHE_TOOLTIP": "Enable this to allow this project to act as a pull-through cache for a particular target registry instance. Harbor can only act a proxy for DockerHub, Docker Registry, Harbor, Aws ECR, Azure ACR, Quay and Google GCR registries.",

@@ -77,7 +77,7 @@ CHECKENVCMD=checkenv.sh
 # default is true
 BUILD_PG96=true
 REGISTRYSERVER=
-REGISTRYPROJECTNAME=goharbor
+REGISTRYPROJECTNAME=tmaxcloudck
 DEVFLAG=true
 NOTARYFLAG=false
 TRIVYFLAG=false
@@ -97,7 +97,7 @@ BUILD_BASE=true
 PUSHBASEIMAGE=false
 BASEIMAGETAG=dev
 BUILDBASETARGET=chartserver trivy-adapter core db jobservice log nginx notary-server notary-signer portal prepare redis registry registryctl exporter
-BASEIMAGENAMESPACE=goharbor
+BASEIMAGENAMESPACE=tmaxcloudck
 # #input true/false only
 PULL_BASE_FROM_DOCKERHUB=true
 
@@ -229,15 +229,15 @@ MAKEFILEPATH_PHOTON=$(MAKEPATH)/photon
 DOCKERFILEPATH_COMMON=$(MAKEPATH)/common
 
 # docker image name
-DOCKER_IMAGE_NAME_PREPARE=goharbor/prepare
-DOCKERIMAGENAME_PORTAL=goharbor/harbor-portal
-DOCKERIMAGENAME_CORE=goharbor/harbor-core
-DOCKERIMAGENAME_JOBSERVICE=goharbor/harbor-jobservice
-DOCKERIMAGENAME_LOG=goharbor/harbor-log
-DOCKERIMAGENAME_DB=goharbor/harbor-db
-DOCKERIMAGENAME_CHART_SERVER=goharbor/chartmuseum-photon
-DOCKERIMAGENAME_REGCTL=goharbor/harbor-registryctl
-DOCKERIMAGENAME_EXPORTER=goharbor/harbor-exporter
+DOCKER_IMAGE_NAME_PREPARE=tmaxcloudck/prepare
+DOCKERIMAGENAME_PORTAL=tmaxcloudck/harbor-portal
+DOCKERIMAGENAME_CORE=tmaxcloudck/harbor-core
+DOCKERIMAGENAME_JOBSERVICE=tmaxcloudck/harbor-jobservice
+DOCKERIMAGENAME_LOG=tmaxcloudck/harbor-log
+DOCKERIMAGENAME_DB=tmaxcloudck/harbor-db
+DOCKERIMAGENAME_CHART_SERVER=tmaxcloudck/chartmuseum-photon
+DOCKERIMAGENAME_REGCTL=tmaxcloudck/harbor-registryctl
+DOCKERIMAGENAME_EXPORTER=tmaxcloudck/harbor-exporter
 
 # docker-compose files
 DOCKERCOMPOSEFILEPATH=$(MAKEPATH)
@@ -270,9 +270,9 @@ DOCKERSAVE_PARA=$(DOCKER_IMAGE_NAME_PREPARE):$(VERSIONTAG) \
 		$(DOCKERIMAGENAME_JOBSERVICE):$(VERSIONTAG) \
 		$(DOCKERIMAGENAME_REGCTL):$(VERSIONTAG) \
 		$(DOCKERIMAGENAME_EXPORTER):$(VERSIONTAG) \
-		goharbor/redis-photon:$(VERSIONTAG) \
-		goharbor/nginx-photon:$(VERSIONTAG) \
-		goharbor/registry-photon:$(VERSIONTAG)
+		tmaxcloudck/redis-photon:$(VERSIONTAG) \
+		tmaxcloudck/nginx-photon:$(VERSIONTAG) \
+		tmaxcloudck/registry-photon:$(VERSIONTAG)
 
 PACKAGE_OFFLINE_PARA=-zcvf harbor-offline-installer-$(PKGVERSIONTAG).tgz \
 					$(HARBORPKG)/$(DOCKERIMGFILE).$(VERSIONTAG).tar.gz \
@@ -291,10 +291,10 @@ PACKAGE_ONLINE_PARA=-zcvf harbor-online-installer-$(PKGVERSIONTAG).tgz \
 DOCKERCOMPOSE_FILE_OPT=-f $(DOCKERCOMPOSEFILEPATH)/$(DOCKERCOMPOSEFILENAME)
 
 ifeq ($(NOTARYFLAG), true)
-	DOCKERSAVE_PARA+= goharbor/notary-server-photon:$(VERSIONTAG) goharbor/notary-signer-photon:$(VERSIONTAG)
+	DOCKERSAVE_PARA+= tmaxcloudck/notary-server-photon:$(VERSIONTAG) tmaxcloudck/notary-signer-photon:$(VERSIONTAG)
 endif
 ifeq ($(TRIVYFLAG), true)
-	DOCKERSAVE_PARA+= goharbor/trivy-adapter-photon:$(VERSIONTAG)
+	DOCKERSAVE_PARA+= tmaxcloudck/trivy-adapter-photon:$(VERSIONTAG)
 endif
 # append chartmuseum parameters if set
 ifeq ($(CHARTFLAG), true)

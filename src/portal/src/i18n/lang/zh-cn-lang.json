@@ -249,7 +249,7 @@
         "STORAGE_QUOTA": "存储容量",
         "COUNT_QUOTA_TIP": "请输入一个'1' ~ '100000000'之间的整数, '-1'表示不设置上限。",
         "STORAGE_QUOTA_TIP": "存储配额的上限仅采用整数值，上限为1024TB。输入“-1”作为无限制配额。",
-        "QUOTA_UNLIMIT_TIP": "如果您想要对存储不设置上限，请输入-1。",
+        "QUOTA_UNLIMIT_TIP": "如果您想要对存储不设置上限，请输入-1。 The storage quota setting is a limiting function, not a guarantee of usage.",
         "TYPE": "类型",
         "PROXY_CACHE": "镜像代理",
         "PROXY_CACHE_TOOLTIP": "开启此项，以使得该项目成为目标仓库的镜像代理.仅支持 DockerHub, Docker Registry, Harbor, Aws ECR, Azure ACR, Quay, Google GCR, JFrog Artifactory, 和 Github GHCR 类型的仓库",

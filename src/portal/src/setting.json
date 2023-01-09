@@ -4,10 +4,10 @@
     "lightMode": ""
   },
   "loginBgImg": "",
-  "loginTitle": "",
+  "loginTitle": "HyperRegistry",
   "product": {
-    "name": "",
-    "logo": "",
+    "name": "HyperRegistry",
+    "logo": "hyperregistry-logo.svg",
     "introduction": ""
   }
 }

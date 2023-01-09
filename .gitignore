@@ -54,3 +54,9 @@ src/server/v2.0/models/
 src/server/v2.0/restapi/
 .editorconfig
 
+make/photon/core/harbor_core
+make/photon/db/postgresql96-9.6.21-1.ph4.x86_64.rpm
+make/photon/db/postgresql96-libs-9.6.21-1.ph4.x86_64.rpm
+make/photon/jobservice/harbor_jobservice
+make/photon/notary/migrate-patch
+make/photon/registryctl/harbor_registryctl

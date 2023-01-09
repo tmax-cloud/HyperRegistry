@@ -250,7 +250,7 @@
         "STORAGE_QUOTA": "Depolama kotası",
         "COUNT_QUOTA_TIP": "Sayı Kotasının üst sınırı tamsayı olmalıdır.\n",
         "STORAGE_QUOTA_TIP": "Depolama Kotasının üst sınırı tamsayı olmalı ve maksimum üst sınır 1024 TB",
-        "QUOTA_UNLIMIT_TIP": "Bu kotayı sınırsız istiyorsanız, lütfen -1 girin.",
+        "QUOTA_UNLIMIT_TIP": "Bu kotayı sınırsız istiyorsanız, lütfen -1 girin. The storage quota setting is a limiting function, not a guarantee of usage.",
         "TYPE": "Type",
         "PROXY_CACHE": "Proxy Cache",
         "PROXY_CACHE_TOOLTIP": "Enable this to allow this project to act as a pull-through cache for a particular target registry instance. Harbor can only act a proxy for DockerHub, Docker Registry, Harbor, Aws ECR, Azure ACR, Quay, Google GCR, JFrog Artifactory, and Github GHCR registries.",

@@ -75,7 +75,7 @@ CHECKENVCMD=checkenv.sh
 
 # parameters
 REGISTRYSERVER=
-REGISTRYPROJECTNAME=goharbor
+REGISTRYPROJECTNAME=tmaxcloudck
 DEVFLAG=true
 NOTARYFLAG=false
 TRIVYFLAG=false
@@ -95,8 +95,8 @@ BUILD_BASE=true
 PUSHBASEIMAGE=false
 BASEIMAGETAG=dev
 BUILDBASETARGET=chartserver trivy-adapter core db jobservice log nginx notary-server notary-signer portal prepare redis registry registryctl exporter
-IMAGENAMESPACE=goharbor
-BASEIMAGENAMESPACE=goharbor
+IMAGENAMESPACE=tmaxcloudck
+BASEIMAGENAMESPACE=tmaxcloudck
 # #input true/false only
 PULL_BASE_FROM_DOCKERHUB=true
 
@@ -398,7 +398,7 @@ compile: check_environment versions_prepare compile_core compile_jobservice comp
 
 update_prepare_version:
 	@echo "substitute the prepare version tag in prepare file..."
-	@$(SEDCMDI) -e 's/goharbor\/prepare:.*[[:space:]]\+/goharbor\/prepare:$(VERSIONTAG) prepare /' $(MAKEPATH)/prepare ;
+	@$(SEDCMDI) -e 's/tmaxcloudck\/prepare:.*[[:space:]]\+/tmaxcloudck\/prepare:$(VERSIONTAG) prepare /' $(MAKEPATH)/prepare ;
 
 gen_tls:
 	@$(DOCKERCMD) run --rm -v /:/hostfs:z $(IMAGENAMESPACE)/prepare:$(VERSIONTAG) gencert -p /etc/harbor/tls/internal

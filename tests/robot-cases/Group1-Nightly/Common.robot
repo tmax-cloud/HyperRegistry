@@ -529,7 +529,7 @@ Test Case - Copy A Image And Accessory
     Cosign Sign  ${ip}/${source_project}/${image}:${tag}
     Docker Logout  ${ip}
     Retry Double Keywords When Error  Go Into Repo  ${source_project}/${image}  Should Be Signed By Cosign  ${tag}
-    
+
     Copy Image  ${tag}  ${target_project}  ${image}
     Retry Wait Until Page Contains  Copy artifact successfully
 
@@ -1029,4 +1029,124 @@ Test Case - Export CVE
     ${csv_file_content}=  Create List  ${csv_file}
     ${actual_cve_data}=  Split To Lines  @{csv_file_content}  1
     Lists Should Be Equal  ${expected_cve_data}  ${actual_cve_data}  ignore_order=True
+    Close Browser
+
+Test Case - Job Service Dashboard Job Queues
+    [Tags]  job_service_job_queues
+    Init Chrome Driver
+    ${d}=  Get Current Date  result_format=%m%s
+    Sign In Harbor  ${HARBOR_URL}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}
+    # Pause GARBAGE_COLLECTION  PURGE_AUDIT  IMAGE_SCAN  RETENTION jobs
+    Switch To Job Queues
+    Pause Jobs  GARBAGE_COLLECTION  PURGE_AUDIT  IMAGE_SCAN  RETENTION
+    Check Button Status
+    Create An New Project And Go Into Project  project${d}
+    Push Image With Tag  ${ip}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}  project${d}  photon  2.0_scan  2.0_scan
+    Push Image With Tag  ${ip}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}  project${d}  photon  3.0_scan  3.0_scan
+    Push Image With Tag  ${ip}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}  project${d}  photon  4.0_scan  4.0_scan
+    Switch To Tag Retention
+    Add A Tag Retention Rule
+    # Triggers two RETENTION jobs
+    ${retention_execution1}=  Execute Dry Run  photon  0/0
+    ${retention_execution2}=  Execute Run  photon  0/0
+    # Triggers three IMAGE_SCAN jobs
+    Switch To Project Repo
+    Go Into Repo  photon
+    Retry Element Click  //clr-datagrid//label[contains(.,'Select All')]
+    Retry Button Click  ${scan_artifact_btn}
+    # Triggers a GARBAGE_COLLECTION job
+    ${gc_execution1}=  GC Now  dry_run=${true}
+    # Triggers a PURGE_AUDIT job
+    Switch to Log Rotation
+    Purge Now  2  Days  Running
+    # Check job queues
+    Switch To Job Queues
+    Check Pending Job Card  IMAGE_SCAN=3  RETENTION=2  Others=2  Total=7
+    Check Jobs Pending Count  IMAGE_SCAN=3  RETENTION=2  GARBAGE_COLLECTION=1  PURGE_AUDIT=1
+    Check Jobs Latency  GARBAGE_COLLECTION=${false}  PURGE_AUDIT=${false}  IMAGE_SCAN=${false}  RETENTION=${false}
+    # Resume GARBAGE_COLLECTION  RETENTION jobs
+    Resume Jobs  GARBAGE_COLLECTION  RETENTION
+    # Check job queues
+    Check Pending Job Card  IMAGE_SCAN=3  PURGE_AUDIT=1  Others=0  Total=4
+    Check Jobs Pending Count  IMAGE_SCAN=3  RETENTION=0  GARBAGE_COLLECTION=0  PURGE_AUDIT=1
+    Check Jobs Latency  GARBAGE_COLLECTION=${true}  PURGE_AUDIT=${false}  IMAGE_SCAN=${false}  RETENTION=${true}
+    # Check retention and GC status
+    Go Into Project  project${d}
+    Switch To Tag Retention
+    Check Retention Execution  ${retention_execution1}  Success  Yes
+    Check Retention Execution  ${retention_execution2}  Success  No
+    Retry GC Should Be Successful  ${gc_execution1}  success to run gc in job
+    # Stop PURGE_AUDIT  IMAGE_SCAN jobs
+    Switch To Job Queues
+    Stop Pending Jobs  PURGE_AUDIT  IMAGE_SCAN
+    # Check job queues
+    Check Pending Job Card  first_job=0  second_job=0  the_third_job=0  Total=0
+    Check Jobs Pending Count  IMAGE_SCAN=0  PURGE_AUDIT=0
+    Check Jobs Latency  GARBAGE_COLLECTION=${true}  PURGE_AUDIT=${true}  IMAGE_SCAN=${true}  RETENTION=${true}
+    # Triggers a PURGE_AUDIT job
+    Switch to Log Rotation
+    Purge Now  1  Days  Running
+    # Triggers three IMAGE_SCAN jobs
+    Go Into Project  project${d}
+    Go Into Repo  photon
+    Retry Element Click  //clr-datagrid//label[contains(.,'Select All')]
+    Retry Button Click  ${scan_artifact_btn}
+    # Check job queues
+    Switch To Job Queues
+    Check Pending Job Card  IMAGE_SCAN=3  PURGE_AUDIT=1  Others=0  Total=4
+    Check Jobs Pending Count   IMAGE_SCAN=3  PURGE_AUDIT=1
+    Check Jobs Latency  IMAGE_SCAN=${false}  PURGE_AUDIT=${false}
+    # Stop all job
+    Stop All Pending Jobs
+    # Check job queues
+    Check Pending Job Card  first_job=0  second_job=0  the_third_job=0  Total=0
+    Check Jobs Pending Count   IMAGE_SCAN=0  PURGE_AUDIT=0
+    Check Jobs Latency  IMAGE_SCAN=${true}  PURGE_AUDIT=${true}
+    Resume Jobs  IMAGE_SCAN  PURGE_AUDIT
+    Close Browser
+
+Test Case - Job Service Dashboard Schedules
+    [Tags]  job_service_schedules
+    Init Chrome Driver
+    ${d}=  Get Current Date  result_format=%m%s
+    ${schedule_type}=  Set Variable  Custom
+    ${schedule_cron}=  Set Variable  0 0 12 * * ?
+    Sign In Harbor  ${HARBOR_URL}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}
+    Create An New Project And Go Into Project  project${d}
+    Push Image With Tag  ${ip}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}  project${d}  photon  2.0  2.0
+    ${replication_policy_name}  ${p2p_policy_name}  ${distribution_name}=  Create Schedules For Job Service Dashboard Schedules  project${d}  ${schedule_type}  ${schedule_cron}
+    Switch To Job Schedules
+    Check Schedule List  ${schedule_cron}
+    Pause All Schedules
+    Check Schedules Status Is Pause  project${d}  ${replication_policy_name}  ${p2p_policy_name}
+    Switch To Job Schedules
+    Resume All Schedules
+    Check Schedules Status Is Not Pause  project${d}  ${replication_policy_name}  ${p2p_policy_name}
+    Reset Schedules For Job Service Dashboard Schedules  project${d}  ${replication_policy_name}  ${p2p_policy_name}
+    Close Browser
+
+Test Case - Job Service Dashboard Workers
+    [Tags]  job_service_workers
+    Init Chrome Driver
+    ${d}=  Get Current Date  result_format=%m%s
+    ${project_name}=  Set Variable  project${d}
+    ${endpoint_name}=  Set Variable  e${d}
+    ${rule_name}=  Set Variable  rule${d}
+    Sign In Harbor  ${HARBOR_URL}  ${HARBOR_ADMIN}  ${HARBOR_PASSWORD}
+    Create An New Project And Go Into Project  ${project_name}
+    Switch to Registries
+    Create A New Endpoint  harbor  ${endpoint_name}  https://${LOCAL_REGISTRY}  ${null}  ${null}
+    Switch To Replication Manage
+    Create A Rule With Existing Endpoint  ${rule_name}  pull  ${LOCAL_REGISTRY_NAMESPACE}/test_replication  image  ${endpoint_name}  ${project_name}  bandwidth=50  bandwidth_unit=Mbps
+    Select Rule And Replicate  ${rule_name}
+    Retry Wait Until Page Contains  Running
+    Switch To Job Workers
+    Retry Wait Until Page Contains Element  //clr-datagrid[.//button[text()='Worker ID']]//clr-dg-row//clr-dg-cell[text()='REPLICATION']
+    Retry Wait Until Page Contains Element  //app-donut-chart//div[text()=' 1/10 ']
+    Switch To Replication Manage
+    Select Rule  ${rule_name}
+    Retry Action Keyword  Check Latest Replication Job Status  Succeeded
+    Switch To Job Workers
+    Retry Wait Until Page Not Contains Element  //clr-datagrid[.//button[text()='Worker ID']]//clr-dg-row//clr-dg-cell[text()='REPLICATION']
+    Retry Wait Until Page Contains Element  //app-donut-chart//div[text()=' 0/10 ']
     Close Browser

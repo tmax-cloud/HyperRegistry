@@ -124,25 +124,35 @@ func main() {
 	web.BConfig.WebConfig.Session.SessionName = config.SessionCookieName
 	web.BConfig.MaxMemory = 1 << 35     // (32GB)
 	web.BConfig.MaxUploadSize = 1 << 35 // (32GB)
-
-	redisURL := os.Getenv("_REDIS_URL_CORE")
-	if len(redisURL) > 0 {
-		u, err := url.Parse(redisURL)
+	// the core db used for beego session
+	redisCoreURL := os.Getenv("_REDIS_URL_CORE")
+	if len(redisCoreURL) > 0 {
+		_, err := url.Parse(redisCoreURL)
 		if err != nil {
-			panic("bad _REDIS_URL")
+			panic("bad _REDIS_URL_CORE")
 		}
-
+		// configure the beego session redis
 		web.BConfig.WebConfig.Session.SessionProvider = session.HarborProviderName
-		web.BConfig.WebConfig.Session.SessionProviderConfig = redisURL
-
-		log.Info("initializing cache ...")
-		if err := cache.Initialize(u.Scheme, redisURL); err != nil {
-			log.Fatalf("failed to initialize cache: %v", err)
-		}
-		// when config/db init function is called, the cache is not ready,
-		// enable config cache explicitly when the cache is ready
-		dbCfg.EnableConfigCache()
+		web.BConfig.WebConfig.Session.SessionProviderConfig = redisCoreURL
 	}
+
+	log.Info("initializing cache ...")
+	// the harbor db used for harbor business, use core db if not specified
+	redisHarborURL := os.Getenv("_REDIS_URL_HARBOR")
+	if redisHarborURL == "" {
+		redisHarborURL = redisCoreURL
+	}
+	u, err := url.Parse(redisHarborURL)
+	if err != nil {
+		panic("bad _REDIS_URL_HARBOR")
+	}
+	if err := cache.Initialize(u.Scheme, redisHarborURL); err != nil {
+		log.Fatalf("failed to initialize cache: %v", err)
+	}
+	// when config/db init function is called, the cache is not ready,
+	// enable config cache explicitly when the cache is ready
+	dbCfg.EnableConfigCache()
+
 	web.AddTemplateExt("htm")
 
 	log.Info("initializing configurations...")
@@ -164,6 +174,7 @@ func main() {
 	if err := dao.InitDatabase(database); err != nil {
 		log.Fatalf("failed to initialize database: %v", err)
 	}
+
 	if strings.EqualFold(*runMode, "migrate") {
 		// Used by Harbor helm preinstall, preupgrade hook container
 		if err = migration.Migrate(database); err != nil {
@@ -183,6 +194,18 @@ func main() {
 	}
 
 	ctx = orm.Clone(ctx)
+	// patch SQL here
+	// due to the limitation of go-migrate: https://github.com/golang-migrate/migrate/issues/278
+	// if one migration SQL file applied to main, and also need to backport to N-2 patch version,
+	// it's normal for N-1, but cannot work for N-2 because applied to N-2 then the schema version
+	// will be a new version which only can be included in the un-released version(e.g main/N-1.x),
+	// hence here will be a potential risk is user want upgrade from N-2.x to N-1.0(released version),
+	// the migration will be failed as go-migrate cannot find the new schema version in a released version.
+	// NOTE: the SQL should be Idempotent as it may be executed for multiple times.
+	if err := patchSQL(ctx); err != nil {
+		log.Fatalf("failed to patch sql: %v", err)
+	}
+
 	if err := config.Load(ctx); err != nil {
 		log.Fatalf("failed to load config: %v", err)
 	}
@@ -305,4 +328,16 @@ func getDefaultScannerName() string {
 		return trivyScanner
 	}
 	return ""
+}
+
+func patchSQL(ctx context.Context) error {
+	ormer, err := orm.FromContext(ctx)
+	if err != nil {
+		return err
+	}
+	// 1. [v2.7.3] Add the index for report_uuids of task's extra_attrs to improve the query performance
+	// CREATE INDEX IF NOT EXISTS idx_task_extra_attrs_report_uuids ON task USING gin ((extra_attrs::jsonb->'report_uuids'));
+	sql := `CREATE INDEX IF NOT EXISTS idx_task_extra_attrs_report_uuids ON task USING gin ((extra_attrs::jsonb->'report_uuids'))`
+	_, err = ormer.Raw(sql).Exec()
+	return err
 }

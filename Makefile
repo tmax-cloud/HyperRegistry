@@ -109,8 +109,8 @@ PREPARE_VERSION_NAME=versions
 REGISTRYVERSION=v2.8.0-patch-redis
 NOTARYVERSION=v0.6.1
 NOTARYMIGRATEVERSION=v4.11.0
-TRIVYVERSION=v0.35.0
-TRIVYADAPTERVERSION=v0.30.6
+TRIVYVERSION=v0.46.1
+TRIVYADAPTERVERSION=v0.30.18
 
 # version of chartmuseum for pulling the source code
 CHARTMUSEUM_SRC_TAG=v0.14.0
@@ -155,14 +155,16 @@ GOINSTALL=$(GOCMD) install
 GOTEST=$(GOCMD) test
 GODEP=$(GOTEST) -i
 GOFMT=gofmt -w
-GOBUILDIMAGE=golang:1.19.4
+GOVERSION=1.21.4
+GOBUILDIMAGE=goharbor/golang:$(GOVERSION)
+PUSHGOIMAGE=false
 GOBUILDPATHINCONTAINER=/harbor
 
 # go build
 PKG_PATH=github.com/goharbor/harbor/src/pkg
 GITCOMMIT := $(shell git rev-parse --short=8 HEAD)
 RELEASEVERSION := $(shell cat VERSION)
-GOFLAGS=
+GOFLAGS=-buildvcs=false
 GOTAGS=$(if $(GOBUILDTAGS),-tags "$(GOBUILDTAGS)",)
 GOLDFLAGS=$(if $(GOBUILDLDFLAGS),--ldflags "-w -s $(GOBUILDLDFLAGS)",)
 CORE_LDFLAGS=-X $(PKG_PATH)/version.GitCommit=$(GITCOMMIT) -X $(PKG_PATH)/version.ReleaseVersion=$(RELEASEVERSION)
@@ -344,7 +346,7 @@ gen_apis: lint_apis
 
 
 MOCKERY_IMAGENAME=$(IMAGENAMESPACE)/mockery
-MOCKERY_VERSION=v2.14.0
+MOCKERY_VERSION=v2.22.1
 MOCKERY=$(RUNCONTAINER) ${MOCKERY_IMAGENAME}:${MOCKERY_VERSION}
 MOCKERY_IMAGE_BUILD_CMD=${DOCKERBUILD} -f ${TOOLSPATH}/mockery/Dockerfile --build-arg GOLANG=${GOBUILDIMAGE} --build-arg MOCKERY_VERSION=${MOCKERY_VERSION} -t ${MOCKERY_IMAGENAME}:$(MOCKERY_VERSION) .
 
@@ -491,6 +493,15 @@ package_offline: update_prepare_version compile build
 	@rm -rf $(HARBORPKG)
 	@echo "Done."
 
+build_golang:
+	@echo "build goharbor/golang image"
+	$(DOCKERBUILD) --build-arg GOVERSION=$(GOVERSION) -f $(MAKEPATH)/photon/golang/Dockerfile -t $(GOBUILDIMAGE) .
+	@if [ "$(PUSHGOIMAGE)" = "true" ] ; then \
+	echo "push goharbor/golang image"; \
+	docker login -u $(REGISTRYUSER) -p $(REGISTRYPASSWORD) ; \
+	docker push $(GOBUILDIMAGE); \
+	fi; \
+
 gosec:
 	#go get github.com/securego/gosec/cmd/gosec
 	#go get github.com/dghubble/sling
@@ -518,7 +529,7 @@ misspell:
 	@find . -type d \( -path ./src/vendor -o -path ./tests \) -prune -o -name '*.go' -print | xargs misspell -error
 
 # golangci-lint binary installation or refer to https://golangci-lint.run/usage/install/#local-installation 
-# curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.45.2
+# curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.51.2
 GOLANGCI_LINT := $(shell go env GOPATH)/bin/golangci-lint
 lint:
 	@echo checking lint

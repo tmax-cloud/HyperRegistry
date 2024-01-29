@@ -21,17 +21,17 @@ jobs:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
       - uses: google-github-actions/setup-gcloud@v0
         with:
-          version: '285.0.0'
+          version: '430.0.0'
       - run: gcloud info
-      - name: Set up Go 1.19
+      - name: Set up Go 1.21
         uses: actions/setup-go@v1
         with:
-          go-version: 1.19.4
+          go-version: 1.21.4
         id: go
       - name: Setup Docker
-        uses: docker-practice/actions-setup-docker@1.0.11
+        uses: docker-practice/actions-setup-docker@master
         with:
-          docker_version: 18.09
+          docker_version: 20.10
           docker_channel: stable
       - uses: actions/checkout@v3
       - uses: jitterbit/get-changed-files@v1
